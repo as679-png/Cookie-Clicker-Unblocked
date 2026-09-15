@@ -3,14 +3,50 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Cookie Clicker - Advanced Edition</title>
+    <title>Cookie Clicker - Overlord Deluxe Edition</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
+    <!-- OVERSEER BOSS FIGHT DISPLAY CONTAINER -->
+    <div id="boss-overlay">
+        <div id="boss-window">
+            <h2 id="boss-name">⚠️ WARNING: THE OVERSEER AWAKENS ⚠️</h2>
+            <div id="boss-timer">Time Left: 10:00</div>
+            <div id="boss-hp-bar-container">
+                <div id="boss-hp-bar"></div>
+            </div>
+            <div id="boss-hp-text">750 / 750 CLICKS</div>
+            <p style="font-size: 0.9rem; color: #aaa; margin-top: 10px;">CLICK THE BIG COOKIE RAPIDLY TO WEAKEN THE OVERSEER!</p>
+        </div>
+    </div>
+
+    <!-- SECRET OWNER DIALOGUE MODAL CONSOLE -->
+    <div id="owner-modal">
+        <div id="owner-panel">
+            <h3>🛸 SYSTEMS CONTROL TERMINAL</h3>
+            <p style="font-size: 0.8rem; color: #888; margin-bottom: 15px;">AUTHORIZED PERSONNEL ONLY</p>
+            
+            <div class="cheat-group">
+                <label>Spawn Cookies Balance:</label>
+                <button onclick="cheatCookies(1000)">+1,000</button>
+                <button onclick="cheatCookies(100000)">+100,000</button>
+                <button onclick="cheatCookies(10000000)">+10,000,000</button>
+            </div>
+
+            <div class="cheat-group" style="margin-top: 15px;">
+                <label>Trigger Special Events:</label>
+                <button onclick="cheatEvent('golden')" class="evt-btn">Spawn Golden Cookie</button>
+                <button onclick="cheatEvent('boss')" class="evt-btn" style="background:#c0392b;">Summon Overseer Boss</button>
+            </div>
+
+            <button onclick="closeOwnerMenu()" style="margin-top: 20px; background:#444; width:100%; padding:8px;">Exit Console</button>
+        </div>
+    </div>
+
     <!-- LEFT COLUMN: Clicking Zone -->
     <div class="section left-section">
-        <div class="bakery-title">Chromebook's Bakery</div>
+        <div class="bakery-title">Chromebook's Cyber-Bakery</div>
         <div class="score-panel">
             <div id="cookie-count">0 cookies</div>
             <div id="cps-count">per second: 0.0</div>
@@ -22,7 +58,6 @@
 
     <!-- MIDDLE COLUMN: News & Achievements -->
     <div class="section middle-section">
-        <!-- Golden Frenzy Progress Timer Bar -->
         <div class="progress-bar-container" id="frenzy-bar-wrap">
             <div class="progress-bar" id="frenzy-bar"></div>
         </div>
@@ -35,7 +70,7 @@
         </div>
 
         <div class="achievements-box">
-            <h3>Achievements</h3>
+            <h3>Achievements Matrix</h3>
             <div class="achievements-flex" id="achievements-container">
                 <div class="badge locked" id="ach-1">🍪 First Click</div>
                 <div class="badge locked" id="ach-100">🔥 Wake & Bake</div>
@@ -43,24 +78,21 @@
                 <div class="badge locked" id="ach-1m">🚀 Space Baker</div>
                 <div class="badge locked" id="ach-cursor">🖱️ Click Storm</div>
                 <div class="badge locked" id="ach-grandma">👵 Senior Support</div>
-                <div class="badge locked" id="ach-farm">🌾 Green Thumb</div>
-                <div class="badge locked" id="ach-factory">🏭 Overproduction</div>
-                <div class="badge locked" id="ach-bank">🏦 Millionaire</div>
-                <div class="badge locked" id="ach-portal">🌀 Multiverse Master</div>
+                <div class="badge locked" id="ach-boss">⚔️ Godslayer</div>
             </div>
         </div>
     </div>
 
     <!-- RIGHT COLUMN: Store with Vertical GUI -->
     <div class="section right-section">
-        <div class="column-header">Store Buildings</div>
+        <div class="column-header">Industrial Store</div>
         <div class="shop-vertical-list">
             
-            <!-- NEW ULTRALIGHT UPGRADE: Click Multiplier -->
+            <!-- Upgrade: Click Multiplier -->
             <div class="item-row disabled upgrade-row" id="item-clickUpgrade" onclick="buyClickUpgrade()">
                 <div class="item-graphic">⚡</div>
                 <div class="item-meta">
-                    <span class="item-title">Click Power 2x</span>
+                    <span class="item-title">Matrix Click Power 2x</span>
                     <span class="item-cost">Price: <span id="cost-clickUpgrade">2</span></span>
                 </div>
                 <div class="item-amount" id="count-clickUpgrade">0</div>
@@ -116,17 +148,40 @@
                 <div class="item-amount" id="count-bank">0</div>
             </div>
 
+            <!-- NEW Item: Temple -->
+            <div class="item-row disabled" id="item-temple" onclick="buyUpgrade('temple')">
+                <div class="item-graphic" id="icon-temple">🏛️</div>
+                <div class="item-meta">
+                    <span class="item-title" id="title-temple">Cookie Temple</span>
+                    <span class="item-cost">Price: <span id="cost-temple">1000000</span></span>
+                </div>
+                <div class="item-amount" id="count-temple">0</div>
+            </div>
+
             <!-- Item: Portal -->
             <div class="item-row disabled" id="item-portal" onclick="buyUpgrade('portal')">
                 <div class="item-graphic" id="icon-portal">🌀</div>
                 <div class="item-meta">
                     <span class="item-title" id="title-portal">Portal</span>
-                    <span class="item-cost">Price: <span id="cost-portal">1400000</span></span>
+                    <span class="item-cost">Price: <span id="cost-portal">14000000</span></span>
                 </div>
                 <div class="item-amount" id="count-portal">0</div>
             </div>
 
+            <!-- NEW Item: Time Machine -->
+            <div class="item-row disabled" id="item-timeMachine" onclick="buyUpgrade('timeMachine')">
+                <div class="item-graphic" id="icon-timeMachine">⏳</div>
+                <div class="item-meta">
+                    <span class="item-title" id="title-timeMachine">Time Machine</span>
+                    <span class="item-cost">Price: <span id="cost-timeMachine">170000000</span></span>
+                </div>
+                <div class="item-amount" id="count-timeMachine">0</div>
+            </div>
+
         </div>
+
+        <!-- CONSOLE ENTRY ACCESS KEYTRIGGER -->
+        <button id="owner-trigger-btn" onclick="openOwnerMenu()">🔑 Open Owner Console</button>
     </div>
 
     <script src="script.js"></script>
