@@ -1,4 +1,4 @@
-/* Core Styling Rules */
+/* Core Layout Rules */
 * {
     box-sizing: border-box;
     margin: 0;
@@ -17,13 +17,13 @@ body {
     overflow: hidden;
 }
 
-/* Strict 3-Column Split Layout */
 .section {
     height: 100%;
     display: flex;
     flex-direction: column;
 }
 
+/* Strict Three-Column Grid Setup */
 .left-section {
     flex: 3;
     background: radial-gradient(circle, #2c3e50 0%, #0f171e 100%);
@@ -38,6 +38,7 @@ body {
     background: #161616;
     border-right: 4px double #555;
     padding: 10px;
+    overflow-y: auto;
 }
 
 .right-section {
@@ -46,7 +47,6 @@ body {
     padding: 10px;
 }
 
-/* Headers */
 .column-header {
     text-align: center;
     font-size: 1.2rem;
@@ -64,7 +64,7 @@ body {
     border-radius: 4px;
 }
 
-/* The Big Cookie Zone */
+/* Score Panel Display */
 .score-panel {
     text-align: center;
     background: rgba(0,0,0,0.6);
@@ -90,6 +90,7 @@ body {
     justify-content: center;
 }
 
+/* The Big Interactive Cookie */
 .big-cookie {
     width: 200px;
     height: 200px;
@@ -118,7 +119,7 @@ body {
     transform: scale(0.95);
 }
 
-/* Click Popups (+1) */
+/* Floating Text Popups (+1) */
 .floating-text {
     position: absolute;
     color: #fff;
@@ -127,6 +128,7 @@ body {
     pointer-events: none;
     animation: textFloat 0.6s ease-out forwards;
     text-shadow: 2px 2px 0px #000;
+    z-index: 100;
 }
 
 @keyframes textFloat {
@@ -134,7 +136,7 @@ body {
     100% { opacity: 0; transform: translateY(-80px); }
 }
 
-/* Middle Column Widgets */
+/* Central News/Achievements Interface */
 .ticker-box {
     background: #000;
     padding: 10px;
@@ -142,6 +144,7 @@ body {
     font-size: 0.85rem;
     margin-bottom: 20px;
     border: 1px solid #333;
+    min-height: 40px;
 }
 
 .ticker-label {
@@ -170,6 +173,7 @@ body {
     border: 1px solid #34495e;
     border-radius: 3px;
     font-size: 0.8rem;
+    transition: background 0.3s;
 }
 
 .badge.locked {
@@ -178,11 +182,13 @@ body {
     color: #444;
 }
 
-/* Right Column Store Engine Layout */
+/* Vertical Upgrades Store Framework */
 .shop-vertical-list {
     display: flex;
     flex-direction: column;
     gap: 6px;
+    overflow-y: auto;
+    flex: 1;
 }
 
 .item-row {
@@ -204,9 +210,16 @@ body {
     cursor: not-allowed;
 }
 
+/* Rule style for Mystery Hidden Items */
+.item-row.mystery {
+    opacity: 0.25;
+}
+
 .item-graphic {
     font-size: 1.8rem;
     margin-right: 10px;
+    width: 35px;
+    text-align: center;
 }
 
 .item-meta {
