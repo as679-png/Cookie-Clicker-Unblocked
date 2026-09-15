@@ -3,9 +3,15 @@ let cookies = 0;
 let totalCPS = 0;
 let lifetimeCookies = 0;
 
+// Click Scaling Mechanics
+let baseClickValue = 1;
+let clickUpgradeCost = 2;
+let clickUpgradeCount = 0;
+
 // Golden Cookie Buff Engines
-let clickMultiplier = 1;
+let goldenMultiplier = 1;
 let frenzyTimer = 0;
+const FRENZY_MAX_DURATION = 20; // 20 Seconds standard
 
 const upgrades = {
     cursor: { name: "Cursor", icon: "🖱️", count: 0, cost: 15, cps: 0.1 },
@@ -20,15 +26,17 @@ const unlockedAchievements = [];
 const cookieBtn = document.getElementById('cookie-btn');
 const leftSection = document.querySelector('.left-section');
 const newsContent = document.getElementById('news-content');
+const frenzyBarWrap = document.getElementById('frenzy-bar-wrap');
+const frenzyBar = document.getElementById('frenzy-bar');
 
 // 1. HANDLING COOKIE MANUAL CLICKS
 cookieBtn.addEventListener('mousedown', (e) => {
-    // Add cookies factoring in standard click value * current frenzy active multiplier
-    let baseGain = 1 * clickMultiplier;
-    cookies += baseGain;
-    lifetimeCookies += baseGain;
+    // Current total = (Base clicking values * Upgrades purchased) * Golden frenzy booster
+    let clickPayout = (baseClickValue) * goldenMultiplier;
+    cookies += clickPayout;
+    lifetimeCookies += clickPayout;
     
-    createFloatingText(e.clientX, e.clientY, `+${baseGain}`);
+    createFloatingText(e.clientX, e.clientY, `+${clickPayout}`);
     checkAchievements();
     updateUI();
 });
@@ -40,8 +48,7 @@ function createFloatingText(x, y, text) {
     textElement.style.left = `${x - 10}px`;
     textElement.style.top = `${y - 20}px`;
     
-    // Golden color text if multiplier buff is active
-    if (clickMultiplier > 1) {
+    if (goldenMultiplier > 1) {
         textElement.style.color = "#f1c40f";
         textElement.style.fontSize = "1.8rem";
     }
@@ -50,7 +57,21 @@ function createFloatingText(x, y, text) {
     setTimeout(() => textElement.remove(), 600);
 }
 
-// 2. PURCHASING SHOP INFRASTRUCTURE UPGRADES
+// 2. PURCHASING SPECIAL CLICK UPGRADE (⚡)
+function buyClickUpgrade() {
+    if (cookies >= clickUpgradeCost) {
+        cookies -= clickUpgradeCost;
+        clickUpgradeCount++;
+        baseClickValue *= 2; // Double clicking value power output
+        clickUpgradeCost *= 2; // Double price scaling threshold factor
+        
+        checkAchievements();
+        newsContent.innerText = `Upgrade Purchased! Manual clicks now yield x${baseClickValue} cookies!`;
+        updateUI();
+    }
+}
+
+// 3. PURCHASING SHOP INFRASTRUCTURE BUILDINGS
 function buyUpgrade(type) {
     const item = upgrades[type];
     
@@ -75,7 +96,7 @@ function calculateCPS() {
                (upgrades.portal.count * upgrades.portal.cps);
 }
 
-// 3. MODIFYING INFO NEWS DESCRIPTORS
+// 4. INFO TICKER DESCRIPTORS
 function updateNewsTicker(type) {
     if (type === 'cursor') newsContent.innerText = "New clicking devices are automated.";
     if (type === 'grandma') newsContent.innerText = "Grandmas have arrived to help upscale batch baking.";
@@ -85,7 +106,7 @@ function updateNewsTicker(type) {
     if (type === 'portal') newsContent.innerText = "A rift opens. Cookies flood in from alternate dimensions!";
 }
 
-// 4. MILESTONE EVALUATION FRAMEWORK
+// 5. ACHIEVEMENTS CHECKER SYSTEM 
 function checkAchievements() {
     if (cookies >= 1 && !unlockedAchievements.includes('ach-1')) {
         unlock('ach-1', "First cookie produced! Your bakery timeline begins.");
@@ -106,18 +127,6 @@ function checkAchievements() {
     if (upgrades.grandma.count >= 1 && !unlockedAchievements.includes('ach-grandma')) {
         unlock('ach-grandma', "A dedicated Grandma joins the assembly line.");
     }
-    if (upgrades.farm.count >= 1 && !unlockedAchievements.includes('ach-farm')) {
-        unlock('ach-farm', "Achievement: Green Thumb! Your fields are blooming with cookies.");
-    }
-    if (upgrades.factory.count >= 1 && !unlockedAchievements.includes('ach-factory')) {
-        unlock('ach-factory', "Achievement: Overproduction! Smog blocks out the sun.");
-    }
-    if (upgrades.bank.count >= 1 && !unlockedAchievements.includes('ach-bank')) {
-        unlock('ach-bank', "Achievement: Millionaire! Interest accrued in chocolate chips.");
-    }
-    if (upgrades.portal.count >= 1 && !unlockedAchievements.includes('ach-portal')) {
-        unlock('ach-portal', "Achievement: Multiverse Master! Realities are collapsing into sweetness.");
-    }
 }
 
 function unlock(id, announcement) {
@@ -127,11 +136,22 @@ function unlock(id, announcement) {
     newsContent.innerText = announcement;
 }
 
-// 5. INTERFACE STATE SYNCHRONIZATION RENDERER
+// 6. INTERFACE STATE RENDERING SCRIPT
 function updateUI() {
     document.getElementById('cookie-count').innerText = `${Math.floor(cookies)} cookies`;
     document.getElementById('cps-count').innerText = `per second: ${totalCPS.toFixed(1)}`;
 
+    // Sync Click Power Upgrade Row
+    document.getElementById('cost-clickUpgrade').innerText = clickUpgradeCost;
+    document.getElementById('count-clickUpgrade').innerText = clickUpgradeCount;
+    const clickItemRow = document.getElementById('item-clickUpgrade');
+    if (cookies >= clickUpgradeCost) {
+        clickItemRow.classList.remove('disabled');
+    } else {
+        clickItemRow.classList.add('disabled');
+    }
+
+    // Sync Standard Building Lists
     for (let key in upgrades) {
         const item = upgrades[key];
         const element = document.getElementById(`item-${key}`);
@@ -160,38 +180,33 @@ function updateUI() {
 }
 
 // ==========================================
-// 6. RANDOM SPAWNING GOLDEN COOKIE MECHANICS
+// 7. GOLDEN COOKIE LOGIC
 // ==========================================
 function spawnGoldenCookie() {
-    // Avoid double spawning
     if (document.querySelector('.golden-cookie')) return;
 
     const golden = document.createElement('div');
     golden.className = 'golden-cookie';
-
-    // Get boundaries of the left section clicking dashboard panel
     const rect = leftSection.getBoundingClientRect();
     
-    // Position completely randomly inside the Left Dashboard constraints
     const randomX = Math.random() * (rect.width - 90) + rect.left;
     const randomY = Math.random() * (rect.height - 90) + rect.top;
 
     golden.style.left = `${randomX}px`;
     golden.style.top = `${randomY}px`;
 
-    // Click trigger behavior
     golden.addEventListener('mousedown', (e) => {
-        e.stopPropagation(); // Avoid triggering standard cookie click behind it
+        e.stopPropagation();
         
-        // Dynamic payout reward calculation: 15% of bank stash + 15 base cookies minimum
         let rawBonus = Math.floor(cookies * 0.15) + 15;
         cookies += rawBonus;
         lifetimeCookies += rawBonus;
 
-        // Activate 100x Click frenzy modifier flag
-        clickMultiplier = 100;
-        frenzyTimer = 20; // 20 Seconds duration counter
+        // Activate Multiplier Timers
+        goldenMultiplier = 100;
+        frenzyTimer = FRENZY_MAX_DURATION;
         
+        frenzyBarWrap.style.display = 'block'; // Make bar visible
         leftSection.classList.add('frenzy-active');
         newsContent.innerText = `Golden Cookie Clicked! Earned +${rawBonus} cookies and 100x CLICK BOOST for 20s!`;
         
@@ -202,33 +217,34 @@ function spawnGoldenCookie() {
 
     document.body.appendChild(golden);
 
-    // Despawn golden cookie automatically if ignored for 12 seconds
     setTimeout(() => {
-        if (document.body.contains(golden)) {
-            golden.remove();
-        }
+        if (document.body.contains(golden)) golden.remove();
     }, 12000);
 }
 
-// Engine core random timing clock loop loop checker (evaluates conditions every single second)
+// Real-Time 1-Second Check Clock Loop Thread Execution
 setInterval(() => {
-    // Handling tracking ticking down active boost timers
     if (frenzyTimer > 0) {
         frenzyTimer--;
+        
+        // Calculate dynamic width percentage remaining
+        let pctRemaining = (frenzyTimer / FRENZY_MAX_DURATION) * 100;
+        frenzyBar.style.width = `${pctRemaining}%`;
+
         if (frenzyTimer === 0) {
-            clickMultiplier = 1;
+            goldenMultiplier = 1;
+            frenzyBarWrap.style.display = 'none'; // Hide empty bar
             leftSection.classList.remove('frenzy-active');
             newsContent.innerText = "News: Your clicking multiplier frenzy has faded.";
         }
     }
 
-    // 2.5% chance to spawn a golden cookie every single second (Ranges from instantly up to a few minutes)
     if (Math.random() < 0.025) {
         spawnGoldenCookie();
     }
 }, 1000);
 
-// Main Base CPS Automatic Income Time Interval Thread Execution (Loops every 100 milliseconds)
+// Core 100ms Automation Loop Tick
 setInterval(() => {
     cookies += (totalCPS / 10);
     if (totalCPS > 0) {
