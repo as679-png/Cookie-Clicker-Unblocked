@@ -1,1 +1,178 @@
+/* UI Setup */
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    user-select: none;
+}
 
+body {
+    background: radial-gradient(circle, #3a2214 0%, #1a0f0a 100%);
+    color: #fff;
+    display: flex;
+    height: 100vh;
+    overflow: hidden;
+}
+
+/* Left Side: Cooking Area */
+.clicker-section {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    background-color: rgba(0, 0, 0, 0.2);
+    border-right: 4px solid #2a180e;
+    position: relative;
+}
+
+.counter-container {
+    text-align: center;
+    margin-bottom: 30px;
+    text-shadow: 0 4px 8px rgba(0,0,0,0.5);
+}
+
+#cookie-count {
+    font-size: 3.5rem;
+    font-weight: bold;
+    color: #f1c40f;
+}
+
+#cps-count {
+    font-size: 1.2rem;
+    color: #bdc3c7;
+    margin-top: 5px;
+}
+
+/* The Big Cookie */
+.cookie-wrapper {
+    position: relative;
+    cursor: pointer;
+}
+
+.cookie {
+    width: 260px;
+    height: 260px;
+    background: radial-gradient(circle, #d35400 0%, #ba4a00 100%);
+    border-radius: 50%;
+    border: 10px solid #e67e22;
+    box-shadow: 0 15px 30px rgba(0,0,0,0.6), inset -15px -15px 0px rgba(0,0,0,0.2);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: transform 0.05s ease;
+}
+
+/* Chocolate Chips */
+.cookie::before {
+    content: '';
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    background-image: 
+        radial-gradient(circle, #4a2311 12px, transparent 13px),
+        radial-gradient(circle, #34190b 10px, transparent 11px),
+        radial-gradient(circle, #4a2311 14px, transparent 15px),
+        radial-gradient(circle, #2c1407 11px, transparent 12px);
+    background-size: 100px 100px;
+    background-position: 10px 20px, 45px 70px, 75px 15px, 20px 80px;
+    opacity: 0.8;
+    border-radius: 50%;
+}
+
+.cookie:active {
+    transform: scale(0.92);
+}
+
+/* Pop-up numbers when clicking (+1) */
+.floating-text {
+    position: absolute;
+    color: #f1c40f;
+    font-weight: bold;
+    font-size: 1.6rem;
+    pointer-events: none;
+    animation: floatUp 0.8s ease-out forwards;
+    text-shadow: 0 2px 4px #000;
+}
+
+@keyframes floatUp {
+    0% { opacity: 1; transform: translateY(0) scale(1); }
+    100% { opacity: 0; transform: translateY(-120px) scale(0.8); }
+}
+
+/* Right Side: Upgrades Shop */
+.shop-section {
+    width: 360px;
+    background-color: #24140b;
+    display: flex;
+    flex-direction: column;
+}
+
+.shop-header {
+    padding: 20px;
+    background-color: #1a0f08;
+    text-align: center;
+    font-size: 1.5rem;
+    font-weight: bold;
+    letter-spacing: 1px;
+    border-bottom: 2px solid #3a2214;
+    color: #e67e22;
+}
+
+.shop-items {
+    flex: 1;
+    overflow-y: auto;
+    padding: 15px;
+}
+
+.shop-item {
+    background-color: #321c10;
+    border: 2px solid #422515;
+    border-radius: 8px;
+    padding: 12px;
+    margin-bottom: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    cursor: pointer;
+    transition: background 0.2s, border-color 0.2s;
+}
+
+.shop-item:hover {
+    background-color: #3d2314;
+}
+
+.shop-item.disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    border-color: #422515 !important;
+}
+
+.shop-item.affordable {
+    border-color: #f1c40f;
+}
+
+.item-details h3 {
+    font-size: 1.1rem;
+    color: #fff;
+    margin-bottom: 2px;
+}
+
+.item-details p {
+    font-size: 0.85rem;
+    color: #bdc3c7;
+}
+
+.item-cost {
+    font-weight: bold;
+    color: #f1c40f;
+    font-size: 1rem;
+}
+
+.item-count {
+    font-size: 1.4rem;
+    font-weight: bold;
+    color: #7f8c8d;
+    padding-left: 10px;
+}
