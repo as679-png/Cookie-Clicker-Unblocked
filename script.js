@@ -1,3 +1,4 @@
+// Game Core State Settings
 let cookies = 0;
 let totalCPS = 0;
 
@@ -11,10 +12,9 @@ const upgrades = {
 const unlockedAchievements = [];
 
 const cookieBtn = document.getElementById('cookie-btn');
-const leftColumn = document.querySelector('.left-column');
 const newsContent = document.getElementById('news-content');
 
-// 1. CLICK COOKIE ACTION
+// 1. Handling Cookie Manual Clicks
 cookieBtn.addEventListener('mousedown', (e) => {
     cookies += 1;
     createFloatingText(e.clientX, e.clientY);
@@ -23,23 +23,23 @@ cookieBtn.addEventListener('mousedown', (e) => {
 });
 
 function createFloatingText(x, y) {
-    const num = document.createElement('div');
-    num.className = 'floating-text';
-    num.innerText = '+1';
-    num.style.left = `${x - 10}px`;
-    num.style.top = `${y - 20}px`;
+    const textElement = document.createElement('div');
+    textElement.className = 'floating-text';
+    textElement.innerText = '+1';
+    textElement.style.left = `${x - 10}px`;
+    textElement.style.top = `${y - 20}px`;
     
-    document.body.appendChild(num);
-    setTimeout(() => num.remove(), 700);
+    document.body.appendChild(textElement);
+    setTimeout(() => textElement.remove(), 600);
 }
 
-// 2. BUY BUILDINGS
+// 2. Purchasing Shop Infrastructure Upgrades
 function buyUpgrade(type) {
     const item = upgrades[type];
     if (cookies >= item.cost) {
         cookies -= item.cost;
         item.count++;
-        item.cost = Math.ceil(item.cost * 1.15);
+        item.cost = Math.ceil(item.cost * 1.15); // Scale price up inflation tracking
         
         calculateCPS();
         checkAchievements();
@@ -55,35 +55,35 @@ function calculateCPS() {
                (upgrades.factory.count * upgrades.factory.cps);
 }
 
-// 3. RUNTIME TICKER UPDATES
+// 3. Modifying Info News Descriptors
 function updateNewsTicker(type) {
-    if (type === 'cursor') newsContent.innerText = "News: New clicker items are clicking on their own accord.";
-    if (type === 'grandma') newsContent.innerText = "News: Local grandmas agree that your cookie batter is decent.";
-    if (type === 'farm') newsContent.innerText = "News: Cookie farms harvest their first chocolate-chip fields.";
-    if (type === 'factory') newsContent.innerText = "News: Industrial production scales. Smog smells delicious.";
+    if (type === 'cursor') newsContent.innerText = "New clicking devices are automated.";
+    if (type === 'grandma') newsContent.innerText = "Grandmas have arrived to help upscale batch baking.";
+    if (type === 'farm') newsContent.innerText = "Huge chocolate-chip crop yield harvested today.";
+    if (type === 'factory') newsContent.innerText = "Industrial cookie production operations look highly efficient.";
 }
 
-// 4. ACHIEVEMENTS CHECKER
+// 4. Milestone Evaluation Framework
 function checkAchievements() {
     if (cookies >= 1 && !unlockedAchievements.includes('ach-1')) {
-        unlock('ach-1', "News: First cookie baked! Your legacy begins.");
+        unlock('ach-1', "First cookie produced! Your bakery timeline begins.");
     }
     if (cookies >= 100 && !unlockedAchievements.includes('ach-100')) {
-        unlock('ach-100', "News: 100 cookies achieved! The kitchen is heating up.");
+        unlock('ach-100', "100 cookies reached! Production rate increasing.");
     }
     if (upgrades.grandma.count >= 1 && !unlockedAchievements.includes('ach-grandma')) {
-        unlock('ach-grandma', "News: Hired a Grandma! She brought extra rolling pins.");
+        unlock('ach-grandma', "A dedicated Grandma joins the assembly line.");
     }
 }
 
-function unlock(id, newsMessage) {
+function unlock(id, announcement) {
     unlockedAchievements.push(id);
-    const element = document.getElementById(id);
-    if (element) element.classList.remove('locked');
-    newsContent.innerText = newsMessage;
+    const badgeElement = document.getElementById(id);
+    if (badgeElement) badgeElement.classList.remove('locked');
+    newsContent.innerText = announcement;
 }
 
-// 5. RENDER SYSTEM
+// 5. Interface State Synchronization Renderer
 function updateUI() {
     document.getElementById('cookie-count').innerText = `${Math.floor(cookies)} cookies`;
     document.getElementById('cps-count').innerText = `per second: ${totalCPS.toFixed(1)}`;
@@ -102,7 +102,7 @@ function updateUI() {
     }
 }
 
-// GAME INTERNAL LOOP
+// Main Time Interval Thread Execution (Loops every 100 milliseconds)
 setInterval(() => {
     cookies += (totalCPS / 10);
     checkAchievements();
