@@ -3,65 +3,88 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Cookie Clicker Remix</title>
-    <!-- Links your external style sheet -->
+    <title>Classic Cookie Clicker Layout</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
-    <!-- Baking Dashboard -->
-    <div class="clicker-section" id="click-area">
+    <!-- LEFT COLUMN: Clicking Zone -->
+    <section class="column left-column">
+        <div class="bakery-name">Chromebook's Bakery</div>
         <div class="counter-container">
             <div id="cookie-count">0 cookies</div>
-            <div id="cps-count">per second: 0</div>
+            <div id="cps-count">per second: 0.0</div>
         </div>
-        <div class="cookie-wrapper">
+        <div class="cookie-container">
             <div class="cookie" id="cookie-btn"></div>
         </div>
-    </div>
+    </section>
 
-    <!-- Right Side Upgrades Store -->
-    <div class="shop-section">
-        <div class="shop-header">Store Upgrades</div>
-        <div class="shop-items">
-            
+    <!-- MIDDLE COLUMN: News & Achievements -->
+    <section class="column middle-column">
+        <div class="panel-header">Stats & Notices</div>
+        
+        <!-- Live Ticker -->
+        <div class="news-ticker">
+            <div class="ticker-title">News:</div>
+            <div id="news-content">Your bakery opens. The world feels slightly sweeter.</div>
+        </div>
+
+        <!-- Achievements Grid -->
+        <div class="achievements-section">
+            <h3>Achievements</h3>
+            <div class="achievements-grid" id="achievements-container">
+                <div class="achievement locked" id="ach-1" title="Bake 1 cookie">🍪 First Click</div>
+                <div class="achievement locked" id="ach-100" title="Bake 100 cookies">🔥 Wake & Bake</div>
+                <div class="achievement locked" id="ach-grandma" title="Own 1 Grandma">👵 Senior Support</div>
+            </div>
+        </div>
+    </section>
+
+    <!-- RIGHT COLUMN: Upgrades & Store Shop -->
+    <section class="column right-column">
+        <div class="panel-header">Store</div>
+        
+        <div class="shop-container">
+            <!-- Buildings List -->
             <div class="shop-item disabled" id="item-cursor" onclick="buyUpgrade('cursor')">
-                <div class="item-details">
-                    <h3>Auto-Clicker Cursor</h3>
-                    <p>Clicks the cookie once every 10 seconds (+0.1 CPS)</p>
+                <div class="item-icon">🖱️</div>
+                <div class="item-info">
+                    <span class="item-name">Cursor</span>
+                    <span class="item-cost-text">Cost: <span id="cost-cursor">15</span></span>
                 </div>
-                <div>
-                    <div class="item-cost" id="cost-cursor">15</div>
-                    <div class="item-count" id="count-cursor">0</div>
-                </div>
+                <div class="item-qty" id="count-cursor">0</div>
             </div>
 
             <div class="shop-item disabled" id="item-grandma" onclick="buyUpgrade('grandma')">
-                <div class="item-details">
-                    <h3>Grandma</h3>
-                    <p>A nice grandma to bake more cookies (+1 CPS)</p>
+                <div class="item-icon">👵</div>
+                <div class="item-info">
+                    <span class="item-name">Grandma</span>
+                    <span class="item-cost-text">Cost: <span id="cost-grandma">100</span></span>
                 </div>
-                <div>
-                    <div class="item-cost" id="cost-grandma">100</div>
-                    <div class="item-count" id="count-grandma">0</div>
-                </div>
+                <div class="item-qty" id="count-grandma">0</div>
             </div>
 
-            <div class="shop-item disabled" id="item-bakery" onclick="buyUpgrade('bakery')">
-                <div class="item-details">
-                    <h3>Cookie Bakery</h3>
-                    <p>Mass-produces baked goodness (+8 CPS)</p>
+            <div class="shop-item disabled" id="item-farm" onclick="buyUpgrade('farm')">
+                <div class="item-icon">🌾</div>
+                <div class="item-info">
+                    <span class="item-name">Farm</span>
+                    <span class="item-cost-text">Cost: <span id="cost-farm">1100</span></span>
                 </div>
-                <div>
-                    <div class="item-cost" id="cost-bakery">1100</div>
-                    <div class="item-count" id="count-bakery">0</div>
-                </div>
+                <div class="item-qty" id="count-farm">0</div>
             </div>
 
+            <div class="shop-item disabled" id="item-factory" onclick="buyUpgrade('factory')">
+                <div class="item-icon">🏭</div>
+                <div class="item-info">
+                    <span class="item-name">Factory</span>
+                    <span class="item-cost-text">Cost: <span id="cost-factory">12000</span></span>
+                </div>
+                <div class="item-qty" id="count-factory">0</div>
+            </div>
         </div>
-    </div>
+    </section>
 
-    <!-- Links your external JavaScript logic -->
     <script src="script.js"></script>
 </body>
 </html>
