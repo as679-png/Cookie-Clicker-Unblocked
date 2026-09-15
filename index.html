@@ -3,87 +3,89 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Classic Cookie Clicker Layout</title>
+    <title>Cookie Clicker - Classic 3-Column Layout</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
-    <!-- LEFT COLUMN: Clicking Zone -->
-    <section class="column left-column">
-        <div class="bakery-name">Chromebook's Bakery</div>
-        <div class="counter-container">
+    <!-- SECTION 1: Left Column (The Clicking Dashboard) -->
+    <div class="section left-section">
+        <div class="bakery-title">Chromebook's Bakery</div>
+        <div class="score-panel">
             <div id="cookie-count">0 cookies</div>
             <div id="cps-count">per second: 0.0</div>
         </div>
-        <div class="cookie-container">
-            <div class="cookie" id="cookie-btn"></div>
+        <div class="cookie-space">
+            <div class="big-cookie" id="cookie-btn"></div>
         </div>
-    </section>
+    </div>
 
-    <!-- MIDDLE COLUMN: News & Achievements -->
-    <section class="column middle-column">
-        <div class="panel-header">Stats & Notices</div>
+    <!-- SECTION 2: Middle Column (News Ticker & Achievements) -->
+    <div class="section middle-section">
+        <div class="column-header">Stats & Notices</div>
         
-        <!-- Live Ticker -->
-        <div class="news-ticker">
-            <div class="ticker-title">News:</div>
-            <div id="news-content">Your bakery opens. The world feels slightly sweeter.</div>
+        <div class="ticker-box">
+            <span class="ticker-label">News:</span>
+            <span id="news-content">Your bakery opens. The world feels slightly sweeter.</span>
         </div>
 
-        <!-- Achievements Grid -->
-        <div class="achievements-section">
+        <div class="achievements-box">
             <h3>Achievements</h3>
-            <div class="achievements-grid" id="achievements-container">
-                <div class="achievement locked" id="ach-1" title="Bake 1 cookie">🍪 First Click</div>
-                <div class="achievement locked" id="ach-100" title="Bake 100 cookies">🔥 Wake & Bake</div>
-                <div class="achievement locked" id="ach-grandma" title="Own 1 Grandma">👵 Senior Support</div>
+            <div class="achievements-flex">
+                <div class="badge locked" id="ach-1">🍪 First Click</div>
+                <div class="badge locked" id="ach-100">🔥 Wake & Bake</div>
+                <div class="badge locked" id="ach-grandma">👵 Senior Support</div>
             </div>
         </div>
-    </section>
+    </div>
 
-    <!-- RIGHT COLUMN: Upgrades & Store Shop -->
-    <section class="column right-column">
-        <div class="panel-header">Store</div>
-        
-        <div class="shop-container">
-            <!-- Buildings List -->
-            <div class="shop-item disabled" id="item-cursor" onclick="buyUpgrade('cursor')">
-                <div class="item-icon">🖱️</div>
-                <div class="item-info">
-                    <span class="item-name">Cursor</span>
-                    <span class="item-cost-text">Cost: <span id="cost-cursor">15</span></span>
+    <!-- SECTION 3: Right Column (Vertical Store GUI) -->
+    <div class="section right-section">
+        <div class="column-header">Store Buildings</div>
+        <div class="shop-vertical-list">
+            
+            <!-- Item: Cursor -->
+            <div class="item-row disabled" id="item-cursor" onclick="buyUpgrade('cursor')">
+                <div class="item-graphic">🖱️</div>
+                <div class="item-meta">
+                    <span class="item-title">Cursor</span>
+                    <span class="item-cost">Price: <span id="cost-cursor">15</span></span>
                 </div>
-                <div class="item-qty" id="count-cursor">0</div>
+                <div class="item-amount" id="count-cursor">0</div>
             </div>
 
-            <div class="shop-item disabled" id="item-grandma" onclick="buyUpgrade('grandma')">
-                <div class="item-icon">👵</div>
-                <div class="item-info">
-                    <span class="item-name">Grandma</span>
-                    <span class="item-cost-text">Cost: <span id="cost-grandma">100</span></span>
+            <!-- Item: Grandma -->
+            <div class="item-row disabled" id="item-grandma" onclick="buyUpgrade('grandma')">
+                <div class="item-graphic">👵</div>
+                <div class="item-meta">
+                    <span class="item-title">Grandma</span>
+                    <span class="item-cost">Price: <span id="cost-grandma">100</span></span>
                 </div>
-                <div class="item-qty" id="count-grandma">0</div>
+                <div class="item-amount" id="count-grandma">0</div>
             </div>
 
-            <div class="shop-item disabled" id="item-farm" onclick="buyUpgrade('farm')">
-                <div class="item-icon">🌾</div>
-                <div class="item-info">
-                    <span class="item-name">Farm</span>
-                    <span class="item-cost-text">Cost: <span id="cost-farm">1100</span></span>
+            <!-- Item: Farm -->
+            <div class="item-row disabled" id="item-farm" onclick="buyUpgrade('farm')">
+                <div class="item-graphic">🌾</div>
+                <div class="item-meta">
+                    <span class="item-title">Farm</span>
+                    <span class="item-cost">Price: <span id="cost-farm">1100</span></span>
                 </div>
-                <div class="item-qty" id="count-farm">0</div>
+                <div class="item-amount" id="count-farm">0</div>
             </div>
 
-            <div class="shop-item disabled" id="item-factory" onclick="buyUpgrade('factory')">
-                <div class="item-icon">🏭</div>
-                <div class="item-info">
-                    <span class="item-name">Factory</span>
-                    <span class="item-cost-text">Cost: <span id="cost-factory">12000</span></span>
+            <!-- Item: Factory -->
+            <div class="item-row disabled" id="item-factory" onclick="buyUpgrade('factory')">
+                <div class="item-graphic">🏭</div>
+                <div class="item-meta">
+                    <span class="item-title">Factory</span>
+                    <span class="item-cost">Price: <span id="cost-factory">12000</span></span>
                 </div>
-                <div class="item-qty" id="count-factory">0</div>
+                <div class="item-amount" id="count-factory">0</div>
             </div>
+
         </div>
-    </section>
+    </div>
 
     <script src="script.js"></script>
 </body>
