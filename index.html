@@ -22,6 +22,11 @@
 
     <!-- MIDDLE COLUMN: News & Achievements -->
     <div class="section middle-section">
+        <!-- Golden Frenzy Progress Timer Bar -->
+        <div class="progress-bar-container" id="frenzy-bar-wrap">
+            <div class="progress-bar" id="frenzy-bar"></div>
+        </div>
+
         <div class="column-header">Stats & Notices</div>
         
         <div class="ticker-box">
@@ -32,12 +37,10 @@
         <div class="achievements-box">
             <h3>Achievements</h3>
             <div class="achievements-flex" id="achievements-container">
-                <!-- Milestones -->
                 <div class="badge locked" id="ach-1">🍪 First Click</div>
                 <div class="badge locked" id="ach-100">🔥 Wake & Bake</div>
                 <div class="badge locked" id="ach-10k">👑 Cookie Royalty</div>
                 <div class="badge locked" id="ach-1m">🚀 Space Baker</div>
-                <!-- Building Milestones -->
                 <div class="badge locked" id="ach-cursor">🖱️ Click Storm</div>
                 <div class="badge locked" id="ach-grandma">👵 Senior Support</div>
                 <div class="badge locked" id="ach-farm">🌾 Green Thumb</div>
@@ -48,11 +51,21 @@
         </div>
     </div>
 
-    <!-- RIGHT COLUMN: Store with Mystery Hidden GUI -->
+    <!-- RIGHT COLUMN: Store with Vertical GUI -->
     <div class="section right-section">
         <div class="column-header">Store Buildings</div>
         <div class="shop-vertical-list">
             
+            <!-- NEW ULTRALIGHT UPGRADE: Click Multiplier -->
+            <div class="item-row disabled upgrade-row" id="item-clickUpgrade" onclick="buyClickUpgrade()">
+                <div class="item-graphic">⚡</div>
+                <div class="item-meta">
+                    <span class="item-title">Click Power 2x</span>
+                    <span class="item-cost">Price: <span id="cost-clickUpgrade">2</span></span>
+                </div>
+                <div class="item-amount" id="count-clickUpgrade">0</div>
+            </div>
+
             <!-- Item: Cursor -->
             <div class="item-row disabled" id="item-cursor" onclick="buyUpgrade('cursor')">
                 <div class="item-graphic" id="icon-cursor">🖱️</div>
