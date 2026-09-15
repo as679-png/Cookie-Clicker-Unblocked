@@ -10,23 +10,13 @@ const upgrades = {
 
 const cookieBtn = document.getElementById('cookie-btn');
 const clickArea = document.getElementById('click-area');
-const clickSound = document.getElementById('click-sound');
 
 // Click Action & Pop-up Effect
 cookieBtn.addEventListener('mousedown', (e) => {
     cookies += 1;
     createFloatingText(e.clientX, e.clientY);
-    playClickSound();
     updateUI();
 });
-
-// Audio Trigger Function
-function playClickSound() {
-    if (clickSound) {
-        clickSound.currentTime = 0; // Rewind sound back to start so rapid clicks work
-        clickSound.play().catch(err => console.log("Audio play delayed until user interacts."));
-    }
-}
 
 function createFloatingText(x, y) {
     const num = document.createElement('div');
