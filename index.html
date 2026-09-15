@@ -3,12 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Cookie Clicker - Classic 3-Column Layout</title>
+    <title>Cookie Clicker - Advanced Edition</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
-    <!-- SECTION 1: Left Column (The Clicking Dashboard) -->
+    <!-- LEFT COLUMN: Clicking Zone -->
     <div class="section left-section">
         <div class="bakery-title">Chromebook's Bakery</div>
         <div class="score-panel">
@@ -20,7 +20,7 @@
         </div>
     </div>
 
-    <!-- SECTION 2: Middle Column (News Ticker & Achievements) -->
+    <!-- MIDDLE COLUMN: News & Achievements -->
     <div class="section middle-section">
         <div class="column-header">Stats & Notices</div>
         
@@ -31,24 +31,33 @@
 
         <div class="achievements-box">
             <h3>Achievements</h3>
-            <div class="achievements-flex">
+            <div class="achievements-flex" id="achievements-container">
+                <!-- Milestones -->
                 <div class="badge locked" id="ach-1">🍪 First Click</div>
                 <div class="badge locked" id="ach-100">🔥 Wake & Bake</div>
+                <div class="badge locked" id="ach-10k">👑 Cookie Royalty</div>
+                <div class="badge locked" id="ach-1m">🚀 Space Baker</div>
+                <!-- Building Milestones -->
+                <div class="badge locked" id="ach-cursor">🖱️ Click Storm</div>
                 <div class="badge locked" id="ach-grandma">👵 Senior Support</div>
+                <div class="badge locked" id="ach-farm">🌾 Green Thumb</div>
+                <div class="badge locked" id="ach-factory">🏭 Overproduction</div>
+                <div class="badge locked" id="ach-bank">🏦 Millionaire</div>
+                <div class="badge locked" id="ach-portal">🌀 Multiverse Master</div>
             </div>
         </div>
     </div>
 
-    <!-- SECTION 3: Right Column (Vertical Store GUI) -->
+    <!-- RIGHT COLUMN: Store with Mystery Hidden GUI -->
     <div class="section right-section">
         <div class="column-header">Store Buildings</div>
         <div class="shop-vertical-list">
             
             <!-- Item: Cursor -->
             <div class="item-row disabled" id="item-cursor" onclick="buyUpgrade('cursor')">
-                <div class="item-graphic">🖱️</div>
+                <div class="item-graphic" id="icon-cursor">🖱️</div>
                 <div class="item-meta">
-                    <span class="item-title">Cursor</span>
+                    <span class="item-title" id="title-cursor">Cursor</span>
                     <span class="item-cost">Price: <span id="cost-cursor">15</span></span>
                 </div>
                 <div class="item-amount" id="count-cursor">0</div>
@@ -56,9 +65,9 @@
 
             <!-- Item: Grandma -->
             <div class="item-row disabled" id="item-grandma" onclick="buyUpgrade('grandma')">
-                <div class="item-graphic">👵</div>
+                <div class="item-graphic" id="icon-grandma">👵</div>
                 <div class="item-meta">
-                    <span class="item-title">Grandma</span>
+                    <span class="item-title" id="title-grandma">Grandma</span>
                     <span class="item-cost">Price: <span id="cost-grandma">100</span></span>
                 </div>
                 <div class="item-amount" id="count-grandma">0</div>
@@ -66,9 +75,9 @@
 
             <!-- Item: Farm -->
             <div class="item-row disabled" id="item-farm" onclick="buyUpgrade('farm')">
-                <div class="item-graphic">🌾</div>
+                <div class="item-graphic" id="icon-farm">🌾</div>
                 <div class="item-meta">
-                    <span class="item-title">Farm</span>
+                    <span class="item-title" id="title-farm">Farm</span>
                     <span class="item-cost">Price: <span id="cost-farm">1100</span></span>
                 </div>
                 <div class="item-amount" id="count-farm">0</div>
@@ -76,12 +85,32 @@
 
             <!-- Item: Factory -->
             <div class="item-row disabled" id="item-factory" onclick="buyUpgrade('factory')">
-                <div class="item-graphic">🏭</div>
+                <div class="item-graphic" id="icon-factory">🏭</div>
                 <div class="item-meta">
-                    <span class="item-title">Factory</span>
+                    <span class="item-title" id="title-factory">Factory</span>
                     <span class="item-cost">Price: <span id="cost-factory">12000</span></span>
                 </div>
                 <div class="item-amount" id="count-factory">0</div>
+            </div>
+
+            <!-- Item: Bank -->
+            <div class="item-row disabled" id="item-bank" onclick="buyUpgrade('bank')">
+                <div class="item-graphic" id="icon-bank">🏦</div>
+                <div class="item-meta">
+                    <span class="item-title" id="title-bank">Bank</span>
+                    <span class="item-cost">Price: <span id="cost-bank">130000</span></span>
+                </div>
+                <div class="item-amount" id="count-bank">0</div>
+            </div>
+
+            <!-- Item: Portal -->
+            <div class="item-row disabled" id="item-portal" onclick="buyUpgrade('portal')">
+                <div class="item-graphic" id="icon-portal">🌀</div>
+                <div class="item-meta">
+                    <span class="item-title" id="title-portal">Portal</span>
+                    <span class="item-cost">Price: <span id="cost-portal">1400000</span></span>
+                </div>
+                <div class="item-amount" id="count-portal">0</div>
             </div>
 
         </div>
