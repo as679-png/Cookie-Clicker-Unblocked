@@ -19,7 +19,6 @@ body {
     overflow: hidden;
 }
 
-/* Master Strict Three-Column Grid Setup */
 .section {
     height: 100%;
     display: flex;
@@ -29,7 +28,6 @@ body {
 /* ==========================================================================
    2. COLUMN WRAPPERS
    ========================================================================== */
-/* LEFT COLUMN: Baking & Clicking Area */
 .left-section {
     flex: 3;
     background: radial-gradient(circle, #2c3e50 0%, #0f171e 100%);
@@ -37,20 +35,19 @@ body {
     align-items: center;
     justify-content: space-between;
     padding: 20px 0;
-    position: relative; /* Essential to keep golden cookies trapped inside this column */
+    position: relative;
     transition: background 0.5s ease, border-color 0.5s ease;
 }
 
-/* MIDDLE COLUMN: News Feed & Achievements Library */
 .middle-section {
     flex: 4;
     background: #161616;
     border-right: 4px double #555;
     padding: 10px;
     overflow-y: auto;
+    position: relative;
 }
 
-/* RIGHT COLUMN: Vertical Store GUI Layout */
 .right-section {
     flex: 3;
     background: #222222;
@@ -60,7 +57,28 @@ body {
 }
 
 /* ==========================================================================
-   3. HEADERS & TEXT PANELS
+   3. PROGRESS TIMING BAR MECHANICS
+   ========================================================================== */
+.progress-bar-container {
+    width: 100%;
+    height: 12px;
+    background: #333; /* Dark gray backing when empty */
+    border: 1px solid #444;
+    margin-bottom: 10px;
+    border-radius: 2px;
+    display: none; /* Invisible until golden cookie is captured */
+    overflow: hidden;
+}
+
+.progress-bar {
+    width: 100%;
+    height: 100%;
+    background: #fff; /* Drains white to dark gray background */
+    transition: width 0.1s linear;
+}
+
+/* ==========================================================================
+   4. HEADERS & TEXT PANELS
    ========================================================================== */
 .column-header {
     text-align: center;
@@ -103,7 +121,7 @@ body {
 }
 
 /* ==========================================================================
-   4. THE INTERACTIVE COOKIE & POPUPS
+   5. THE INTERACTIVE COOKIE & POPUPS
    ========================================================================== */
 .cookie-space {
     flex: 1;
@@ -124,7 +142,6 @@ body {
     transition: transform 0.05s ease;
 }
 
-/* Procedural Chocolate Chips */
 .big-cookie::before {
     content: '';
     position: absolute;
@@ -141,7 +158,6 @@ body {
     transform: scale(0.95);
 }
 
-/* Click Popups (+1) Floating Mechanics */
 .floating-text {
     position: absolute;
     color: #fff;
@@ -159,7 +175,7 @@ body {
 }
 
 /* ==========================================================================
-   5. MIDDLE COLUMN LOGIC (NEWS & ACHIEVEMENTS)
+   6. MIDDLE COLUMN LOGIC (NEWS & ACHIEVEMENTS)
    ========================================================================== */
 .ticker-box {
     background: #000;
@@ -207,7 +223,7 @@ body {
 }
 
 /* ==========================================================================
-   6. SHOP INFRASTRUCTURE & MYSTERY OVERRIDES
+   7. SHOP INFRASTRUCTURE & SPECIAL ROWS
    ========================================================================== */
 .shop-vertical-list {
     display: flex;
@@ -229,17 +245,25 @@ body {
     transition: background 0.2s, opacity 0.2s;
 }
 
+/* Click Upgrade Accent Row Highlight */
+.item-row.upgrade-row {
+    background: #273722;
+    border-color: #2ecc71;
+}
+
 .item-row:hover:not(.disabled) {
     background: #444;
 }
 
-/* Affordability State Rules */
+.item-row.upgrade-row:hover:not(.disabled) {
+    background: #344c2e;
+}
+
 .item-row.disabled {
     opacity: 0.35;
     cursor: not-allowed;
 }
 
-/* Custom Rule for Hidden Undiscovered Mystery Items */
 .item-row.mystery {
     opacity: 0.20;
 }
@@ -278,7 +302,7 @@ body {
 }
 
 /* ==========================================================================
-   7. GOLDEN COOKIE RANDOM EVENT SYSTEM
+   8. GOLDEN COOKIE RANDOM EVENT SYSTEM
    ========================================================================== */
 .golden-cookie {
     position: absolute;
@@ -293,7 +317,6 @@ body {
     animation: goldenGlow 1s infinite alternate ease-in-out;
 }
 
-/* Chocolate chips for the golden cookie */
 .golden-cookie::before {
     content: '';
     position: absolute;
@@ -306,16 +329,14 @@ body {
     opacity: 0.6;
 }
 
-/* Pulsing neon highlight animation loop */
 @keyframes goldenGlow {
     0% { transform: scale(1); box-shadow: 0 0 15px #f1c40f; }
     100% { transform: scale(1.1); box-shadow: 0 0 35px #f39c12, 0 0 50px #f1c40f; }
 }
 
-/* Background layout shifts when 100x Frenzy Multiplier is active */
 .left-section.frenzy-active {
     background: radial-gradient(circle, #4d3319 0%, #1a0f00 100%) !important;
-    animation: flashGold Border 2s infinite alternate;
+    animation: flashGoldBorder 2s infinite alternate;
 }
 
 @keyframes flashGoldBorder {
