@@ -1,301 +1,198 @@
-// Game Core Variables
-let cookies = 0;
-let totalCPS = 0;
-let lifetimeCookies = 0;
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cookie Clicker - Overlord Deluxe Edition</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
 
-// Click Core Parameters
-let baseClickValue = 1;
-let clickUpgradeCost = 2;
-let clickUpgradeCount = 0;
+    <!-- OVERSEER BOSS FIGHT DISPLAY CONTAINER -->
+    <div id="boss-overlay">
+        <div id="boss-window">
+            <h2 id="boss-name">⚠️ WARNING: THE OVERSEER AWAKENS ⚠️</h2>
+            <div id="boss-timer">Time Left: 10:00</div>
+            <div id="boss-hp-bar-container">
+                <div id="boss-hp-bar"></div>
+            </div>
+            <div id="boss-hp-text">750 / 750 CLICKS</div>
+            <p style="font-size: 0.9rem; color: #aaa; margin-top: 10px;">CLICK THE BIG COOKIE RAPIDLY TO WEAKEN THE OVERSEER!</p>
+        </div>
+    </div>
 
-// Golden Cookie System Engine
-let goldenMultiplier = 1;
-let frenzyTimer = 0;
-const FRENZY_MAX_DURATION = 20;
+    <!-- FIXED: INLINE OWNER PANEL FRAME (NO HIDDEN POPUPS) -->
+    <div id="owner-modal">
+        <div id="owner-panel">
+            <h3>🛸 SYSTEMS CONTROL TERMINAL</h3>
+            <p style="font-size: 0.8rem; color: #888; margin-bottom: 15px;">AUTHORIZED PERSONNEL ONLY</p>
+            
+            <!-- Secure Entrance Form Gate -->
+            <div id="security-gate">
+                <label style="display:block; margin-bottom: 8px; color: #ff4757; font-size: 0.9rem;">ENTER ACCESS KEY PHRASE:</label>
+                <!-- FIXED: Changed input from type=password to type=text to remove Chromebook validation blockages -->
+                <input type="text" id="console-key-input" placeholder="Type key here..." style="width:90%; padding:8px; background:#0b0c10; border:1px solid #1f2833; color:#fff; margin-bottom:12px; font-family:monospace; text-align:center;">
+                <button onclick="verifyConsoleKey()" style="background:#66fcf1; color:#0b0c10; width:100%; padding:10px; font-weight:bold; border:none; cursor:pointer; border-radius:4px;">VERIFY IDENTITY</button>
+            </div>
 
-// BOSS FIGHT INSTANCE PARAMETERS
-let bossActive = false;
-let bossHP = 750;
-const BOSS_MAX_HP = 750;
-let bossTimeLeft = 600; 
-let bossTimerInterval = null;
+            <!-- Cheat Command Board Grid -->
+            <div id="cheat-controls" style="display: none;">
+                <div class="cheat-group">
+                    <label style="display:block; margin-bottom:5px; color:#66fcf1; font-size:0.85rem;">Spawn Cookies Balance:</label>
+                    <!-- Fixed inline javascript triggers -->
+                    <button onclick="cheatCookies(1000)">+1k</button>
+                    <button onclick="cheatCookies(100000)">+100k</button>
+                    <button onclick="cheatCookies(10000000)">+10M</button>
+                </div>
 
-const upgrades = {
-    cursor: { name: "Cursor", icon: "🖱️", count: 0, cost: 15, cps: 0.1 },
-    grandma: { name: "Grandma", icon: "👵", count: 0, cost: 100, cps: 1 },
-    farm: { name: "Farm", icon: "🌾", count: 0, cost: 1100, cps: 8 },
-    factory: { name: "Factory", icon: "🏭", count: 0, cost: 12000, cps: 47 },
-    bank: { name: "Bank", icon: "🏦", count: 0, cost: 130000, cps: 260 },
-    temple: { name: "Temple", icon: "🏛️", count: 0, cost: 1000000, cps: 1400 },
-    portal: { name: "Portal", icon: "🌀", count: 0, cost: 14000000, cps: 7800 },
-    timeMachine: { name: "Time Machine", icon: "⏳", count: 0, cost: 170000000, cps: 44000 }
-};
+                <div class="cheat-group" style="margin-top: 15px;">
+                    <label style="display:block; margin-bottom:5px; color:#66fcf1; font-size:0.85rem;">Trigger Special Events:</label>
+                    <button onclick="cheatEvent('golden')" class="evt-btn">Spawn Golden</button>
+                    <button onclick="cheatEvent('boss')" class="evt-btn" style="background:#c0392b; color:#fff;">Summon Boss</button>
+                </div>
+            </div>
 
-const unlockedAchievements = [];
-const cookieBtn = document.getElementById('cookie-btn');
-const leftSection = document.querySelector('.left-section');
-const newsContent = document.getElementById('news-content');
-const frenzyBarWrap = document.getElementById('frenzy-bar-wrap');
-const frenzyBar = document.getElementById('frenzy-bar');
+            <button onclick="closeOwnerMenu()" style="margin-top: 20px; background:#444; width:100%; padding:8px; border:none; color:#fff; cursor:pointer; border-radius:4px;">Exit Console</button>
+        </div>
+    </div>
 
-// 1. CLICK COOKIE CORE LOGIC
-cookieBtn.addEventListener('mousedown', (e) => {
-    if (bossActive) {
-        damageBoss();
-    } else {
-        let clickPayout = baseClickValue * goldenMultiplier;
-        cookies += clickPayout;
-        lifetimeCookies += clickPayout;
-        createFloatingText(e.clientX, e.clientY, `+${clickPayout}`);
-    }
-    checkAchievements();
-    updateUI();
-});
+    <!-- LEFT COLUMN: Clicking Zone -->
+    <div class="section left-section">
+        <div class="bakery-title">Chromebook's Cyber-Bakery</div>
+        <div class="score-panel">
+            <div id="cookie-count">0 cookies</div>
+            <div id="cps-count">per second: 0.0</div>
+        </div>
+        <div class="cookie-space">
+            <div class="big-cookie" id="cookie-btn"></div>
+        </div>
+    </div>
 
-function createFloatingText(x, y, text, customColor = null) {
-    const textElement = document.createElement('div');
-    textElement.className = 'floating-text';
-    textElement.innerText = text;
-    textElement.style.left = `${x - 10}px`;
-    textElement.style.top = `${y - 20}px`;
-    
-    if (customColor) {
-        textElement.style.color = customColor;
-    } else if (goldenMultiplier > 1) {
-        textElement.style.color = "#f1c40f";
-    }
-    
-    document.body.appendChild(textElement);
-    setTimeout(() => textElement.remove(), 500);
-}
+    <!-- MIDDLE COLUMN: News & Achievements -->
+    <div class="section middle-section">
+        <div class="progress-bar-container" id="frenzy-bar-wrap">
+            <div class="progress-bar" id="frenzy-bar"></div>
+        </div>
 
-// 2. PURCHASE UPGRADES
-function buyClickUpgrade() {
-    if (cookies >= clickUpgradeCost) {
-        cookies -= clickUpgradeCost;
-        clickUpgradeCount++;
-        baseClickValue *= 2;
-        clickUpgradeCost *= 2;
-        newsContent.innerText = `Upgrade! Manual clicks now yield x${baseClickValue} cookies!`;
-        updateUI();
-    }
-}
-
-function buyUpgrade(type) {
-    const item = upgrades[type];
-    if (lifetimeCookies >= item.cost && cookies >= item.cost) {
-        cookies -= item.cost;
-        item.count++;
-        item.cost = Math.ceil(item.cost * 1.15);
-        calculateCPS();
-        updateUI();
-    }
-}
-
-function calculateCPS() {
-    totalCPS = 0;
-    for (let key in upgrades) {
-        totalCPS += upgrades[key].count * upgrades[key].cps;
-    }
-}
-
-// 3. BOSS CONFLICT CONTROLLER ENGINE
-function startBossFight() {
-    if (bossActive) return;
-    bossActive = true;
-    bossHP = BOSS_MAX_HP;
-    bossTimeLeft = 600; 
-    
-    document.getElementById('boss-overlay').style.display = 'block';
-    newsContent.innerText = "⚠️ THE OVERSEER HAS BLOCKED REGULAR PRODUCTION! CLICK THE COOKIE TO DESTROY HIM!";
-    updateBossUI();
-
-    bossTimerInterval = setInterval(() => {
-        bossTimeLeft--;
-        let mins = Math.floor(bossTimeLeft / 60);
-        let secs = bossTimeLeft % 60;
-        document.getElementById('boss-timer').innerText = `Time Left: ${mins}:${secs < 10 ? '0' : ''}${secs}`;
-
-        if (bossTimeLeft <= 0) {
-            failBossFight();
-        }
-    }, 1000);
-}
-
-function damageBoss() {
-    bossHP--;
-    updateBossUI();
-    
-    let randomX = window.innerWidth / 4; 
-    let randomY = window.innerHeight / 2;
-    createFloatingText(randomX, randomY, "💥 CRIT!", "#ff4757");
-
-    if (bossHP <= 0) {
-        winBossFight();
-    }
-}
-
-function updateBossUI() {
-    let pct = (bossHP / BOSS_MAX_HP) * 100;
-    document.getElementById('boss-hp-bar').style.width = `${pct}%`;
-    document.getElementById('boss-hp-text').innerText = `${bossHP} / ${BOSS_MAX_HP} CLICKS`;
-}
-
-function winBossFight() {
-    clearInterval(bossTimerInterval);
-    bossActive = false;
-    document.getElementById('boss-overlay').style.display = 'none';
-    cookies += 5000;
-    lifetimeCookies += 5000;
-    unlock('ach-boss', "🏆 DEFEATED THE OVERSEER! You earned a massive bounty of 5,000 cookies!");
-    updateUI();
-}
-
-function failBossFight() {
-    clearInterval(bossTimerInterval);
-    bossActive = false;
-    document.getElementById('boss-overlay').style.display = 'none';
-    cookies = Math.floor(cookies / 2);
-    newsContent.innerText = "💀 TIME EXPIRED! The Overseer absorbed 50% of your cookie vaults.";
-    updateUI();
-}
-
-// 4. REVISED SECURE PANEL OPENING CONTROLLERS
-function openOwnerMenu() {
-    // Reset display values inside modal container
-    document.getElementById('security-gate').style.display = 'block';
-    document.getElementById('cheat-controls').style.display = 'none';
-    document.getElementById('console-key-input').value = "";
-    
-    // Open the base visual frame container panel on screen
-    document.getElementById('owner-modal').style.display = 'flex';
-}
-
-function verifyConsoleKey() {
-    const inputVal = document.getElementById('console-key-input').value;
-    
-    if (inputVal === "COOKIEOVERLORD") {
-        // Unlock panel commands
-        document.getElementById('security-gate').style.display = 'none';
-        document.getElementById('cheat-controls').style.display = 'block';
-        newsContent.innerText = "[SYSTEM]: Owner privileges successfully confirmed.";
-    } else {
-        alert("❌ ACCESS DENIED: INVALID PRIVILEGE ACCESS CODE.");
-    }
-}
-
-function closeOwnerMenu() {
-    document.getElementById('owner-modal').style.display = 'none';
-}
-
-function cheatCookies(amount) {
-    cookies += amount;
-    lifetimeCookies += amount;
-    newsContent.innerText = `[CHEAT]: Injected +${amount} cookies into the system.`;
-    updateUI();
-}
-
-function cheatEvent(type) {
-    closeOwnerMenu();
-    if (type === 'golden') {
-        spawnGoldenCookie();
-    } else if (type === 'boss') {
-        startBossFight();
-    }
-}
-
-// 5. MILESTONE CHECKER
-function checkAchievements() {
-    if (cookies >= 1 && !unlockedAchievements.includes('ach-1')) unlock('ach-1', "First cookie produced!");
-    if (cookies >= 100 && !unlockedAchievements.includes('ach-100')) unlock('ach-100', "100 cookies reached!");
-}
-
-function unlock(id, msg) {
-    if (unlockedAchievements.includes(id)) return;
-    unlockedAchievements.push(id);
-    const el = document.getElementById(id);
-    if (el) el.classList.remove('locked');
-    newsContent.innerText = msg;
-}
-
-// 6. UI SYSTEM SYNCHRONIZER
-function updateUI() {
-    document.getElementById('cookie-count').innerText = `${Math.floor(cookies)} cookies`;
-    document.getElementById('cps-count').innerText = `per second: ${totalCPS.toFixed(1)}`;
-
-    document.getElementById('cost-clickUpgrade').innerText = clickUpgradeCost;
-    document.getElementById('count-clickUpgrade').innerText = clickUpgradeCount;
-    
-    const clickItemRow = document.getElementById('item-clickUpgrade');
-    if (cookies >= clickUpgradeCost) clickItemRow.classList.remove('disabled');
-    else clickItemRow.classList.add('disabled');
-
-    for (let key in upgrades) {
-        const item = upgrades[key];
-        const element = document.getElementById(`item-${key}`);
-        const titleEl = document.getElementById(`title-${key}`);
-        const iconEl = document.getElementById(`icon-${key}`);
+        <div class="column-header">Stats & Notices</div>
         
-        document.getElementById(`cost-${key}`).innerText = item.cost;
-        document.getElementById(`count-${key}`).innerText = item.count;
+        <div class="ticker-box">
+            <span class="ticker-label">News:</span>
+            <span id="news-content">Your bakery opens. The world feels slightly sweeter.</span>
+        </div>
 
-        if (lifetimeCookies < item.cost && item.count === 0) {
-            element.classList.add('mystery');
-            titleEl.innerText = "???";
-            iconEl.innerText = "❓";
-        } else {
-            element.classList.remove('mystery');
-            titleEl.innerText = item.name;
-            iconEl.innerText = item.icon;
-        }
+        <div class="achievements-box">
+            <h3>Achievements Matrix</h3>
+            <div class="achievements-flex" id="achievements-container">
+                <div class="badge locked" id="ach-1">🍪 First Click</div>
+                <div class="badge locked" id="ach-100">🔥 Wake & Bake</div>
+                <div class="badge locked" id="ach-10k">👑 Cookie Royalty</div>
+                <div class="badge locked" id="ach-1m">🚀 Space Baker</div>
+                <div class="badge locked" id="ach-cursor">🖱️ Click Storm</div>
+                <div class="badge locked" id="ach-grandma">👵 Senior Support</div>
+                <div class="badge locked" id="ach-boss">⚔️ Godslayer</div>
+            </div>
+        </div>
+    </div>
 
-        if (cookies >= item.cost) element.classList.remove('disabled');
-        else element.classList.add('disabled');
-    }
-}
+    <!-- RIGHT COLUMN: Store with Vertical GUI -->
+    <div class="section right-section">
+        <div class="column-header">Industrial Store</div>
+        <div class="shop-vertical-list">
+            
+            <!-- Upgrade: Click Multiplier -->
+            <div class="item-row disabled upgrade-row" id="item-clickUpgrade" onclick="buyClickUpgrade()">
+                <div class="item-graphic">⚡</div>
+                <div class="item-meta">
+                    <span class="item-title">Matrix Click Power 2x</span>
+                    <span class="item-cost">Price: <span id="cost-clickUpgrade">2</span></span>
+                </div>
+                <div class="item-amount" id="count-clickUpgrade">0</div>
+            </div>
 
-// 7. GOLDEN COOKIE LOGIC
-function spawnGoldenCookie() {
-    if (document.querySelector('.golden-cookie') || bossActive) return;
+            <!-- Item: Cursor -->
+            <div class="item-row disabled" id="item-cursor" onclick="buyUpgrade('cursor')">
+                <div class="item-graphic" id="icon-cursor">🖱️</div>
+                <div class="item-meta">
+                    <span class="item-title" id="title-cursor">Cursor</span>
+                    <span class="item-cost">Price: <span id="cost-cursor">15</span></span>
+                </div>
+                <div class="item-amount" id="count-cursor">0</div>
+            </div>
 
-    const golden = document.createElement('div');
-    golden.className = 'golden-cookie';
-    const rect = leftSection.getBoundingClientRect();
-    
-    const randomX = Math.random() * (rect.width - 90) + rect.left;
-    const randomY = Math.random() * (rect.height - 90) + rect.top;
+            <!-- Item: Grandma -->
+            <div class="item-row disabled" id="item-grandma" onclick="buyUpgrade('grandma')">
+                <div class="item-graphic" id="icon-grandma">👵</div>
+                <div class="item-meta">
+                    <span class="item-title" id="title-grandma">Grandma</span>
+                    <span class="item-cost">Price: <span id="cost-grandma">100</span></span>
+                </div>
+                <div class="item-amount" id="count-grandma">0</div>
+            </div>
 
-    golden.style.left = `${randomX}px`;
-    golden.style.top = `${randomY}px`;
+            <!-- Item: Farm -->
+            <div class="item-row disabled" id="item-farm" onclick="buyUpgrade('farm')">
+                <div class="item-graphic" id="icon-farm">🌾</div>
+                <div class="item-meta">
+                    <span class="item-title" id="title-farm">Farm</span>
+                    <span class="item-cost">Price: <span id="cost-farm">1100</span></span>
+                </div>
+                <div class="item-amount" id="count-farm">0</div>
+            </div>
 
-    golden.addEventListener('mousedown', (e) => {
-        e.stopPropagation();
-        let rawBonus = Math.floor(cookies * 0.15) + 15;
-        cookies += rawBonus;
-        lifetimeCookies += rawBonus;
+            <!-- Item: Factory -->
+            <div class="item-row disabled" id="item-factory" onclick="buyUpgrade('factory')">
+                <div class="item-graphic" id="icon-factory">🏭</div>
+                <div class="item-meta">
+                    <span class="item-title" id="title-factory">Factory</span>
+                    <span class="item-cost">Price: <span id="cost-factory">12000</span></span>
+                </div>
+                <div class="item-amount" id="count-factory">0</div>
+            </div>
 
-        goldenMultiplier = 100;
-        frenzyTimer = FRENZY_MAX_DURATION;
-        
-        frenzyBarWrap.style.display = 'block';
-        leftSection.classList.add('frenzy-active');
-        newsContent.innerText = `Golden Cookie Captured! 100x CLICK BOOST activated!`;
-        
-        golden.remove();
-        updateUI();
-    });
+            <!-- Item: Bank -->
+            <div class="item-row disabled" id="item-bank" onclick="buyUpgrade('bank')">
+                <div class="item-graphic" id="icon-bank">🏦</div>
+                <div class="item-meta">
+                    <span class="item-title" id="title-bank">Bank</span>
+                    <span class="item-cost">Price: <span id="cost-bank">130000</span></span>
+                </div>
+                <div class="item-amount" id="count-bank">0</div>
+            </div>
 
-    document.body.appendChild(golden);
-    setTimeout(() => { if (document.body.contains(golden)) golden.remove(); }, 12000);
-}
+            <!-- Item: Temple -->
+            <div class="item-row disabled" id="item-temple" onclick="buyUpgrade('temple')">
+                <div class="item-graphic" id="icon-temple">🏛️</div>
+                <div class="item-meta">
+                    <span class="item-title" id="title-temple">Cookie Temple</span>
+                    <span class="item-cost">Price: <span id="cost-temple">1000000</span></span>
+                </div>
+                <div class="item-amount" id="count-temple">0</div>
+            </div>
 
-// Timers / Intervals
-setInterval(() => {
-    if (frenzyTimer > 0) {
-        frenzyTimer--;
-        let pctRemaining = (frenzyTimer / FRENZY_MAX_DURATION) * 100;
-        frenzyBar.style.width = `${pctRemaining}%`;
+            <!-- Item: Portal -->
+            <div class="item-row disabled" id="item-portal" onclick="buyUpgrade('portal')">
+                <div class="item-graphic" id="icon-portal">🌀</div>
+                <div class="item-meta">
+                    <span class="item-title" id="title-portal">Portal</span>
+                    <span class="item-cost">Price: <span id="cost-portal">14000000</span></span>
+                </div>
+                <div class="item-amount" id="count-portal">0</div>
+            </div>
 
-        if (frenzyTimer === 0) {
-            goldenMultiplier = 1;
-            frenzyBarWrap.style.display = 'none';
+            <!-- Item: Time Machine -->
+            <div class="item-row disabled" id="item-timeMachine" onclick="buyUpgrade('timeMachine')">
+                <div class="item-graphic" id="icon-timeMachine">⏳</div>
+                <div class="item-meta">
+                    <span class="item-title" id="title-timeMachine">Time Machine</span>
+                    <span class="item-cost">Price: <span id="cost-timeMachine">170000000</span></span>
+                </div>
+                <div class="item-amount" id="count-timeMachine">0</div>
+            </div>
+
+        </div>
+
+        <!-- CONSOLE ENTRY ACCESS KEYTRIGGER -->
+        <button id="owner-trigger-btn" onclick="openOwnerMenu()">🔑 Open Owner Console</button>
+    </div>
+
