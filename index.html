@@ -3,196 +3,371 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Cookie Clicker - Overlord Deluxe Edition</title>
-    <link rel="stylesheet" href="style.css">
-</head>
-<body>
+    <title>Cookie Clicker - Overlord Definitive Edition</title>
+    <style>
+        /* ==========================================================================
+           1. CORE CYBER LAYOUT & STYLE RULES
+           ========================================================================== */
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, Roboto, sans-serif;
+            user-select: none;
+        }
 
-    <!-- OVERSEER BOSS FIGHT DISPLAY CONTAINER -->
-    <div id="boss-overlay">
-        <div id="boss-window">
-            <h2 id="boss-name">⚠️ WARNING: THE OVERSEER AWAKENS ⚠️</h2>
-            <div id="boss-timer">Time Left: 10:00</div>
-            <div id="boss-hp-bar-container">
-                <div id="boss-hp-bar"></div>
-            </div>
-            <div id="boss-hp-text">750 / 750 CLICKS</div>
-            <p style="font-size: 0.9rem; color: #aaa; margin-top: 10px;">CLICK THE BIG COOKIE RAPIDLY TO WEAKEN THE OVERSEER!</p>
-        </div>
-    </div>
+        body {
+            background-color: #0b0c10;
+            color: #c5c6c7;
+            display: flex;
+            flex-direction: row;
+            height: 100vh;
+            width: 100vw;
+            overflow: hidden;
+        }
 
-    <!-- FIXED: INLINE OWNER PANEL FRAME (NO HIDDEN POPUPS) -->
-    <div id="owner-modal">
-        <div id="owner-panel">
-            <h3>🛸 SYSTEMS CONTROL TERMINAL</h3>
-            <p style="font-size: 0.8rem; color: #888; margin-bottom: 15px;">AUTHORIZED PERSONNEL ONLY</p>
-            
-            <!-- Secure Entrance Form Gate -->
-            <div id="security-gate">
-                <label style="display:block; margin-bottom: 8px; color: #ff4757; font-size: 0.9rem;">ENTER ACCESS KEY PHRASE:</label>
-                <!-- FIXED: Changed input from type=password to type=text to remove Chromebook validation blockages -->
-                <input type="text" id="console-key-input" placeholder="Type key here..." style="width:90%; padding:8px; background:#0b0c10; border:1px solid #1f2833; color:#fff; margin-bottom:12px; font-family:monospace; text-align:center;">
-                <button onclick="verifyConsoleKey()" style="background:#66fcf1; color:#0b0c10; width:100%; padding:10px; font-weight:bold; border:none; cursor:pointer; border-radius:4px;">VERIFY IDENTITY</button>
-            </div>
+        .section {
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            box-shadow: inset 0 0 20px rgba(0,0,0,0.8);
+        }
 
-            <!-- Cheat Command Board Grid -->
-            <div id="cheat-controls" style="display: none;">
-                <div class="cheat-group">
-                    <label style="display:block; margin-bottom:5px; color:#66fcf1; font-size:0.85rem;">Spawn Cookies Balance:</label>
-                    <!-- Fixed inline javascript triggers -->
-                    <button onclick="cheatCookies(1000)">+1k</button>
-                    <button onclick="cheatCookies(100000)">+100k</button>
-                    <button onclick="cheatCookies(10000000)">+10M</button>
-                </div>
+        /* The 3-Column Interface System Split */
+        .left-section {
+            flex: 3;
+            background: radial-gradient(circle at center, #1f2833 0%, #0b0c10 100%);
+            border-right: 2px solid #1f2833;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: space-between;
+            padding: 25px 0;
+            position: relative;
+        }
 
-                <div class="cheat-group" style="margin-top: 15px;">
-                    <label style="display:block; margin-bottom:5px; color:#66fcf1; font-size:0.85rem;">Trigger Special Events:</label>
-                    <button onclick="cheatEvent('golden')" class="evt-btn">Spawn Golden</button>
-                    <button onclick="cheatEvent('boss')" class="evt-btn" style="background:#c0392b; color:#fff;">Summon Boss</button>
-                </div>
-            </div>
+        .middle-section {
+            flex: 4;
+            background: #0f1115;
+            border-right: 2px solid #1f2833;
+            padding: 15px;
+            overflow-y: auto;
+            position: relative;
+        }
 
-            <button onclick="closeOwnerMenu()" style="margin-top: 20px; background:#444; width:100%; padding:8px; border:none; color:#fff; cursor:pointer; border-radius:4px;">Exit Console</button>
-        </div>
-    </div>
+        .right-section {
+            flex: 3;
+            background: #15181f;
+            padding: 15px;
+            display: flex;
+            flex-direction: column;
+        }
 
-    <!-- LEFT COLUMN: Clicking Zone -->
-    <div class="section left-section">
-        <div class="bakery-title">Chromebook's Cyber-Bakery</div>
-        <div class="score-panel">
-            <div id="cookie-count">0 cookies</div>
-            <div id="cps-count">per second: 0.0</div>
-        </div>
-        <div class="cookie-space">
-            <div class="big-cookie" id="cookie-btn"></div>
-        </div>
-    </div>
+        /* UI Headers & Panels */
+        .column-header {
+            text-align: center;
+            font-size: 1.1rem;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            color: #66fcf1;
+            padding-bottom: 12px;
+            border-bottom: 2px solid #1f2833;
+            margin-bottom: 20px;
+        }
 
-    <!-- MIDDLE COLUMN: News & Achievements -->
-    <div class="section middle-section">
-        <div class="progress-bar-container" id="frenzy-bar-wrap">
-            <div class="progress-bar" id="frenzy-bar"></div>
-        </div>
+        .bakery-title {
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: #66fcf1;
+            background: rgba(31, 40, 51, 0.6);
+            padding: 8px 20px;
+            border-radius: 20px;
+            border: 1px solid #45f3ff33;
+            text-shadow: 0 0 10px rgba(102, 252, 241, 0.3);
+        }
 
-        <div class="column-header">Stats & Notices</div>
-        
-        <div class="ticker-box">
-            <span class="ticker-label">News:</span>
-            <span id="news-content">Your bakery opens. The world feels slightly sweeter.</span>
-        </div>
+        .score-panel {
+            text-align: center;
+            background: rgba(0, 0, 0, 0.4);
+            padding: 20px;
+            width: 100%;
+            border-top: 1px solid #1f2833;
+            border-bottom: 1px solid #1f2833;
+        }
 
-        <div class="achievements-box">
-            <h3>Achievements Matrix</h3>
-            <div class="achievements-flex" id="achievements-container">
-                <div class="badge locked" id="ach-1">🍪 First Click</div>
-                <div class="badge locked" id="ach-100">🔥 Wake & Bake</div>
-                <div class="badge locked" id="ach-10k">👑 Cookie Royalty</div>
-                <div class="badge locked" id="ach-1m">🚀 Space Baker</div>
-                <div class="badge locked" id="ach-cursor">🖱️ Click Storm</div>
-                <div class="badge locked" id="ach-grandma">👵 Senior Support</div>
-                <div class="badge locked" id="ach-boss">⚔️ Godslayer</div>
-            </div>
-        </div>
-    </div>
+        #cookie-count {
+            font-size: 2.4rem;
+            color: #fff;
+            font-weight: 800;
+        }
 
-    <!-- RIGHT COLUMN: Store with Vertical GUI -->
-    <div class="section right-section">
-        <div class="column-header">Industrial Store</div>
-        <div class="shop-vertical-list">
-            
-            <!-- Upgrade: Click Multiplier -->
-            <div class="item-row disabled upgrade-row" id="item-clickUpgrade" onclick="buyClickUpgrade()">
-                <div class="item-graphic">⚡</div>
-                <div class="item-meta">
-                    <span class="item-title">Matrix Click Power 2x</span>
-                    <span class="item-cost">Price: <span id="cost-clickUpgrade">2</span></span>
-                </div>
-                <div class="item-amount" id="count-clickUpgrade">0</div>
-            </div>
+        #cps-count {
+            font-size: 1.1rem;
+            color: #45f3ff;
+            font-weight: 600;
+            margin-top: 4px;
+        }
 
-            <!-- Item: Cursor -->
-            <div class="item-row disabled" id="item-cursor" onclick="buyUpgrade('cursor')">
-                <div class="item-graphic" id="icon-cursor">🖱️</div>
-                <div class="item-meta">
-                    <span class="item-title" id="title-cursor">Cursor</span>
-                    <span class="item-cost">Price: <span id="cost-cursor">15</span></span>
-                </div>
-                <div class="item-amount" id="count-cursor">0</div>
-            </div>
+        /* Big Cookie Zone Layout Constraints */
+        .cookie-space {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 100%;
+            min-height: 250px;
+        }
 
-            <!-- Item: Grandma -->
-            <div class="item-row disabled" id="item-grandma" onclick="buyUpgrade('grandma')">
-                <div class="item-graphic" id="icon-grandma">👵</div>
-                <div class="item-meta">
-                    <span class="item-title" id="title-grandma">Grandma</span>
-                    <span class="item-cost">Price: <span id="cost-grandma">100</span></span>
-                </div>
-                <div class="item-amount" id="count-grandma">0</div>
-            </div>
+        .big-cookie {
+            width: 210px;
+            height: 210px;
+            background: radial-gradient(circle, #e67e22 0%, #d35400 100%);
+            border: 6px solid #a04000;
+            border-radius: 50%;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.6), 0 0 30px rgba(211, 84, 0, 0.2);
+            cursor: pointer;
+            position: relative;
+            transition: transform 0.05s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
 
-            <!-- Item: Farm -->
-            <div class="item-row disabled" id="item-farm" onclick="buyUpgrade('farm')">
-                <div class="item-graphic" id="icon-farm">🌾</div>
-                <div class="item-meta">
-                    <span class="item-title" id="title-farm">Farm</span>
-                    <span class="item-cost">Price: <span id="cost-farm">1100</span></span>
-                </div>
-                <div class="item-amount" id="count-farm">0</div>
-            </div>
+        .big-cookie::before {
+            content: '';
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            background-image: radial-gradient(circle, #3e1b07 7px, transparent 8px);
+            background-size: 45px 45px;
+            background-position: 12px 12px, 32px 38px, 15px 70px, 75px 25px;
+            opacity: 0.75;
+        }
 
-            <!-- Item: Factory -->
-            <div class="item-row disabled" id="item-factory" onclick="buyUpgrade('factory')">
-                <div class="item-graphic" id="icon-factory">🏭</div>
-                <div class="item-meta">
-                    <span class="item-title" id="title-factory">Factory</span>
-                    <span class="item-cost">Price: <span id="cost-factory">12000</span></span>
-                </div>
-                <div class="item-amount" id="count-factory">0</div>
-            </div>
+        .big-cookie:active {
+            transform: scale(0.93);
+        }
 
-            <!-- Item: Bank -->
-            <div class="item-row disabled" id="item-bank" onclick="buyUpgrade('bank')">
-                <div class="item-graphic" id="icon-bank">🏦</div>
-                <div class="item-meta">
-                    <span class="item-title" id="title-bank">Bank</span>
-                    <span class="item-cost">Price: <span id="cost-bank">130000</span></span>
-                </div>
-                <div class="item-amount" id="count-bank">0</div>
-            </div>
+        .floating-text {
+            position: absolute;
+            color: #45f3ff;
+            font-weight: 800;
+            font-size: 1.5rem;
+            pointer-events: none;
+            animation: textFloat 0.5s ease-out forwards;
+            text-shadow: 0 0 8px rgba(69,243,255,0.6);
+            z-index: 100;
+        }
 
-            <!-- Item: Temple -->
-            <div class="item-row disabled" id="item-temple" onclick="buyUpgrade('temple')">
-                <div class="item-graphic" id="icon-temple">🏛️</div>
-                <div class="item-meta">
-                    <span class="item-title" id="title-temple">Cookie Temple</span>
-                    <span class="item-cost">Price: <span id="cost-temple">1000000</span></span>
-                </div>
-                <div class="item-amount" id="count-temple">0</div>
-            </div>
+        @keyframes textFloat {
+            0% { opacity: 1; transform: translateY(0) scale(1.2); }
+            100% { opacity: 0; transform: translateY(-90px) scale(0.8); }
+        }
 
-            <!-- Item: Portal -->
-            <div class="item-row disabled" id="item-portal" onclick="buyUpgrade('portal')">
-                <div class="item-graphic" id="icon-portal">🌀</div>
-                <div class="item-meta">
-                    <span class="item-title" id="title-portal">Portal</span>
-                    <span class="item-cost">Price: <span id="cost-portal">14000000</span></span>
-                </div>
-                <div class="item-amount" id="count-portal">0</div>
-            </div>
+        /* Widgets, Tickers & Badges */
+        .progress-bar-container {
+            width: 100%;
+            height: 8px;
+            background: #1c2331;
+            margin-bottom: 15px;
+            border-radius: 4px;
+            display: none;
+            overflow: hidden;
+        }
 
-            <!-- Item: Time Machine -->
-            <div class="item-row disabled" id="item-timeMachine" onclick="buyUpgrade('timeMachine')">
-                <div class="item-graphic" id="icon-timeMachine">⏳</div>
-                <div class="item-meta">
-                    <span class="item-title" id="title-timeMachine">Time Machine</span>
-                    <span class="item-cost">Price: <span id="cost-timeMachine">170000000</span></span>
-                </div>
-                <div class="item-amount" id="count-timeMachine">0</div>
-            </div>
+        .progress-bar {
+            width: 100%;
+            height: 100%;
+            background: #fff;
+            box-shadow: 0 0 10px #fff;
+        }
 
-        </div>
+        .ticker-box {
+            background: #0b0c10;
+            padding: 12px;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            margin-bottom: 25px;
+            border: 1px solid #1f2833;
+        }
 
-        <!-- CONSOLE ENTRY ACCESS KEYTRIGGER -->
-        <button id="owner-trigger-btn" onclick="openOwnerMenu()">🔑 Open Owner Console</button>
-    </div>
+        .ticker-label {
+            color: #ff4757;
+            font-weight: bold;
+        }
 
+        .achievements-box h3 {
+            color: #66fcf1;
+            font-size: 1rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 12px;
+        }
+
+        .achievements-flex {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        .badge {
+            padding: 6px 12px;
+            background: #1f2833;
+            border: 1px solid #45f3ff33;
+            color: #fff;
+            border-radius: 6px;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+
+        .badge.locked {
+            background: #11141a;
+            border-color: #222;
+            color: #4a5568;
+        }
+
+        /* Store Design & Interactive States */
+        .shop-vertical-list {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            overflow-y: auto;
+            flex: 1;
+            padding-right: 4px;
+        }
+
+        .item-row {
+            display: flex;
+            align-items: center;
+            background: #1f2833;
+            border: 1px solid #333;
+            padding: 10px;
+            cursor: pointer;
+            border-radius: 8px;
+            transition: background 0.15s, border-color 0.15s;
+        }
+
+        .item-row.upgrade-row {
+            background: #13222d;
+            border-color: #00bcd4;
+        }
+
+        .item-row:hover:not(.disabled) {
+            background: #2a3545;
+            border-color: #66fcf1;
+        }
+
+        .item-row.disabled {
+            opacity: 0.3;
+            cursor: not-allowed;
+        }
+
+        .item-row.mystery {
+            opacity: 0.15;
+        }
+
+        .item-graphic {
+            font-size: 1.6rem;
+            margin-right: 12px;
+            width: 32px;
+            text-align: center;
+        }
+
+        .item-meta {
+            display: flex;
+            flex-direction: column;
+            flex: 1;
+        }
+
+        .item-title {
+            font-weight: 700;
+            font-size: 0.95rem;
+            color: #fff;
+        }
+
+        .item-cost {
+            font-size: 0.8rem;
+            color: #66fcf1;
+            font-weight: 600;
+        }
+
+        .item-amount {
+            font-size: 1.4rem;
+            font-weight: 800;
+            color: #4a5568;
+        }
+
+        .item-row:not(.disabled) .item-amount {
+            color: #66fcf1;
+        }
+
+        /* Access Console System Button Layout */
+        #owner-trigger-btn {
+            width: 100%;
+            background: #1f2833;
+            color: #66fcf1;
+            border: 1px dashed #66fcf1;
+            padding: 10px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: bold;
+            margin-top: 15px;
+        }
+
+        #owner-trigger-btn:hover {
+            background: #66fcf1;
+            color: #0b0c10;
+        }
+
+        /* Complete Overlay Console Window Frame */
+        #owner-modal {
+            position: fixed;
+            top: 0; left: 0; 
+            width: 100vw; height: 100vh;
+            background: rgba(0,0,0,0.85);
+            z-index: 100000 !important;
+            display: none; 
+            align-items: center;
+            justify-content: center;
+        }
+
+        #owner-panel {
+            background: #15181f;
+            border: 2px solid #66fcf1;
+            padding: 25px;
+            border-radius: 12px;
+            width: 400px;
+            box-shadow: 0 0 30px rgba(102, 252, 241, 0.4);
+            text-align: center;
+        }
+
+        .cheat-group button {
+            background: #1f2833;
+            color: #fff;
+            border: 1px solid #444;
+            padding: 8px 14px;
+            margin: 4px;
+            cursor: pointer;
+            border-radius: 4px;
+            font-weight: bold;
+        }
+
+        .cheat-group button:hover {
+            border-color: #66fcf1;
+            color: #66fcf1;
+        }
+
+        /* Overseer Boss HUD Element */
+        #boss-overlay {
+            position: fixed;
+            top: 0; left: 0; width: 100vw; height: 100vh;
+            background: rgba(139, 0, 0, 0.2);
+            border: 4px solid #c0392b;
+            box-shadow: inset 0 0 50px rgba(0,0,0,0.9);
+            z-index: 9999;
+            display: none;
+            pointer-events: none;
+        }
+
+        #boss-window {
+            position: absolute;
+Use code with caution.top: 20px; left: 50%;transform: translateX(-50%);background: #111;border: 2px solid #c0392b;padding: 15px 40px;text-align: center;border-radius: 8px;width: 500px;pointer-events: auto;box-shadow: 0 0 30px rgba(192, 57, 43, 0.5);}#boss-hp-bar-container {width: 100%; height: 20px;background: #222;border: 1px solid #555;margin: 10px 0;border-radius: 4px;overflow: hidden;}#boss-hp-bar {width: 100%; height: 100%;background: linear-gradient(to right, #990000, #ff0000);}#boss-timer {font-size: 1.4rem;font-weight: 800;color: #ff4757;}/* Random Golden Cookie System Element */.golden-cookie {position: absolute;width: 75px; height: 75px;background: radial-gradient(circle, #f39c12 0%, #f1c40f 70%, #d35400 100%);border: 3px solid #f39c12;border-radius: 50%;box-shadow: 0 0 25px #f1c40f;cursor: pointer;z-index: 999;animation: goldenGlow 1s infinite alternate ease-in-out;}@keyframes goldenGlow {0% { transform: scale(1); box-shadow: 0 0 15px #f1c40f; }100% { transform: scale(1.08); box-shadow: 0 0 35px #f1c40f; }}.left-section.frenzy-active {background: radial-gradient(circle at center, #2c1a04 0%, #0b0c10 100%) !important;}⚠️ THE OVERSEER AWAKENS ⚠️Time Left: 10:00750 / 750 HITSTAP THE COOKIE RAPIDLY TO WEAKEN THE OVERSEER!🛸 SYSTEMS CONTROL TERMINALAUTHORIZED PROTOCOL MATRIXENTER ACCESS KEY PHRASE:VERIFY ACCESS CODESpawn Cash Cookies Vault:+5,000+500,000+50,000,000Force Global Events:☀️ Drop Golden Cookie👹 Spawn Overseer BossCLOSE MONITOR INTERFACEChromebook's Cyber-Bakery0 cookiesper second: 0.0Bakery MetricsNews:Your bakery opens. The world feels slightly sweeter.Achievements Matrix🍪 First Click🔥 Wake & Bake👑 Cookie Royalty🚀 Space Baker🖱️ Click Storm👵 Senior Support⚔️ GodslayerIndustrial Store⚡Matrix Click Power 2xPrice: 20🖱️CursorPrice: 150👵GrandmaPrice: 1000🌾FarmPrice: 11000🏭FactoryPrice: 120000🏦BankPrice: 1300000🏛️Cookie TemplePrice: 10000000🌀PortalPrice: 140000000⏳Time MachinePrice: 1700000000🔑 Open Owner Console// Core Value Balance Variableslet cookies = 0;let totalCPS = 0;let lifetimeCookies = 0;// Manual Clicking Factorslet baseClickValue = 1;let clickUpgradeCost = 2;let clickUpgradeCount = 0;// Golden Buff Modifierslet goldenMultiplier = 1;let frenzyTimer = 0;const FRENZY_MAX_DURATION = 20;// Event Instance Vectors: The Overseer Boss Modulelet bossActive = false;let bossHP = 750;const BOSS_MAX_HP = 750;let bossTimeLeft = 600;let bossTimerInterval = null;const upgrades = {cursor: { name: "Cursor", icon: "🖱️", count: 0, cost: 15, cps: 0.1 },grandma: { name: "Grandma", icon: "👵", count: 0, cost: 100, cps: 1 },farm: { name: "Farm", icon: "🌾", count: 0, cost: 1100, cps: 8 },factory: { name: "Factory", icon: "🏭", count: 0, cost: 12000, cps: 47 },bank: { name: "Bank", icon: "🏦", count: 0, cost: 130000, cps: 260 },temple: { name: "Temple", icon: "🏛️", count: 0, cost: 1000000, cps: 1400 },portal: { name: "Portal", icon: "🌀", count: 0, cost: 14000000, cps: 7800 },timeMachine: { name: "Time Machine", icon: "⏳", count: 0, cost: 170000000, cps: 44000 }};const unlockedAchievements = [];const cookieBtn = document.getElementById('cookie-btn');const leftSection = document.querySelector('.left-section');const newsContent = document.getElementById('news-content');const frenzyBarWrap = document.getElementById('frenzy-bar-wrap');const frenzyBar = document.getElementById('frenzy-bar');// Manual Click HookscookieBtn.addEventListener('mousedown', (e) => {if (bossActive) {damageBoss();} else {let clickPayout = baseClickValue * goldenMultiplier;cookies += clickPayout;lifetimeCookies += clickPayout;createFloatingText(e.clientX, e.clientY, +${clickPayout});}checkAchievements();updateUI();});function createFloatingText(x, y, text, customColor = null) {const textElement = document.createElement('div');textElement.className = 'floating-text';textElement.innerText = text;textElement.style.left = ${x - 10}px;textElement.style.top = ${y - 20}px;if (customColor) {textElement.style.color = customColor;} else if (goldenMultiplier > 1) {textElement.style.color = "#f1c40f";}document.body.appendChild(textElement);setTimeout(() => textElement.remove(), 500);}// Shop Action Trigger Operationsfunction buyClickUpgrade() {if (cookies >= clickUpgradeCost) {cookies -= clickUpgradeCost;clickUpgradeCount++;baseClickValue *= 2;clickUpgradeCost *= 2;newsContent.innerText = Upgrade Engine Running! Click power scales up to x${baseClickValue}!;updateUI();}}function buyUpgrade(type) {const item = upgrades[type];if (lifetimeCookies >= item.cost && cookies >= item.cost) {cookies -= item.cost;item.count++;item.cost = Math.ceil(item.cost * 1.15);calculateCPS();updateUI();}}function calculateCPS() {totalCPS = 0;for (let key in upgrades) {totalCPS += upgrades[key].count * upgrades[key].cps;}}// Boss Battle Logic Loopsfunction startBossFight() {if (bossActive) return;bossActive = true;bossHP = BOSS_MAX_HP;bossTimeLeft = 600;document.getElementById('boss-overlay').style.display = 'block';newsContent.innerText = "⚠️ THE OVERSEER HAS BLOCKED ALL PRODUCTION WORKSPACES! ELIMINATE HIM NOW!";updateBossUI();bossTimerInterval = setInterval(() => {bossTimeLeft--;let mins = Math.floor(bossTimeLeft / 60);let secs = bossTimeLeft % 60;document.getElementById('boss-timer').innerText = Time Left: ${mins}:${secs < 10 ? '0' : ''}${secs};if (bossTimeLeft <= 0) {failBossFight();}}, 1000);}function damageBoss() {bossHP--;updateBossUI();let mockX = window.innerWidth / 4;let mockY = window.innerHeight / 2;createFloatingText(mockX, mockY, "💥 DAMAGE!", "#ff4757");if (bossHP <= 0) {winBossFight();}}function updateBossUI() {let pct = (bossHP / BOSS_MAX_HP) * 100;document.getElementById('boss-hp-bar').style.width = ${pct}%;document.getElementById('boss-hp-text').innerText = ${bossHP} / ${BOSS_MAX_HP} HITS;}function winBossFight() {clearInterval(bossTimerInterval);bossActive = false;document.getElementById('boss-overlay').style.display = 'none';cookies += 5000;lifetimeCookies += 5000;unlock('ach-boss', "🏆 DESTROYED THE OVERSEER! Injected 5,000 cookie bounty rewards.");updateUI();}function failBossFight() {clearInterval(bossTimerInterval);bossActive = false;document.getElementById('boss-overlay').style.display = 'none';cookies = Math.floor(cookies / 2);newsContent.innerText = "💀 SYSTEM DEFEAT: The Overseer wiped 50% of your bank reserves.";updateUI();}// Direct Core UI Modal Control Actionsfunction openOwnerMenu() {document.getElementById('owner-modal').style.setProperty('display', 'flex', 'important');document.getElementById('security-gate').style.display = 'block';document.getElementById('cheat-controls').style.display = 'none';document.getElementById('console-key-input').value = "";}function verifyConsoleKey() {const codeWord = document.getElementById('console-key-input').value.trim();if (codeWord === "COOKIEOVERLORD") {document.getElementById('security-gate').style.display = 'none';document.getElementById('cheat-controls').style.display = 'block';newsContent.innerText = "[SYSTEM]: Owner privileges successfully confirmed.";} else {alert("❌ CODE REJECTED: PRIVILEGE VALIDATION FAILED.");}}function closeOwnerMenu() {document.getElementById('owner-modal').style.setProperty('display', 'none', 'important');}function cheatCookies(amount) {cookies += amount;lifetimeCookies += amount;newsContent.innerText = [CHEAT]: Added +${amount} cookies.;updateUI();}function cheatEvent(type) {closeOwnerMenu();if (type === 'golden') spawnGoldenCookie();if (type === 'boss') startBossFight();}// Milestones & Tickersfunction checkAchievements() {if (cookies >= 1 && !unlockedAchievements.includes('ach-1')) unlock('ach-1', "First cookie baked!");if (cookies >= 100 && !unlockedAchievements.includes('ach-100')) unlock('ach-100', "100 cookies reached!");}function unlock(id, msg) {if (unlockedAchievements.includes(id)) return;unlockedAchievements.push(id);const badge = document.getElementById(id);if (badge) badge.classList.remove('locked');newsContent.innerText = msg;}// UI Synchronization Display Loopfunction updateUI() {document.getElementById('cookie-count').innerText = ${Math.floor(cookies)} cookies;document.getElementById('cps-count').innerText = per second: ${totalCPS.toFixed(1)};document.getElementById('cost-clickUpgrade').innerText = clickUpgradeCost;document.getElementById('count-clickUpgrade').innerText = clickUpgradeCount;const clickRow = document.getElementById('item-clickUpgrade');if (cookies >= clickUpgradeCost) clickRow.classList.remove('disabled');else clickRow.classList.add('disabled');for (let key in upgrades) {const item = upgrades[key];const element = document.getElementById(item-${key});const titleEl = document.getElementById(title-${key});const iconEl = document.getElementById(icon-${key});document.getElementById(cost-${key}).innerText = item.cost;document.getElementById(count-${key}).innerText = item.count;if (lifetimeCookies < item.cost && item.count === 0) {element.classList.add('mystery');titleEl.innerText = "???";iconEl.innerText = "❓";} else {element.classList.remove('mystery');titleEl.innerText = item.name;iconEl.innerText = item.icon;}if (cookies >= item.cost) element.classList.remove('disabled');else element.classList.add('disabled');}}// Random Spawning Mechanics for Golden Cookiesfunction spawnGoldenCookie() {if (document.querySelector('.golden-cookie') || bossActive) return;const golden = document.createElement('div');golden.className = 'golden-cookie';const rect = leftSection.getBoundingClientRect();const randomX = Math.random() * (rect.width - 90) + rect.left;const randomY = Math.random() * (rect.height - 90) + rect.top;golden.style.left = ${randomX}px;golden.style.top = ${randomY}px;golden.addEventListener('mousedown', (e) => {e.stopPropagation();let bonus = Math.floor(cookies * 0.15) + 15;cookies += bonus;lifetimeCookies += bonus;goldenMultiplier = 100;frenzyTimer = FRENZY_MAX_DURATION;frenzyBarWrap.style.display = 'block';leftSection.classList.add('frenzy-active');newsContent.innerText = Captured Golden Cookie! 100x Multiplier online!;golden.remove();updateUI();});document.body.appendChild(golden);setTimeout(() => { if (document.body.contains(golden)) golden.remove(); }, 12000);}// Clock IntervalssetInterval(() => {if (frenzyTimer > 0) {frenzyTimer--;let widthPct = (frenzyTimer / FRENZY_MAX_DURATION) * 100;frenzyBar.style.width = ${widthPct}%;if (frenzyTimer === 0) {goldenMultiplier = 1;frenzyBarWrap.style.display = 'none';leftSection.classList.remove('frenzy-active');}}if (!bossActive && cookies > 200 && Math.random() < 0.01) startBossFight();else if (!bossActive && Math.random() < 0.025) spawnGoldenCookie();}, 1000);setInterval(() => {if (!bossActive) {cookies += (totalCPS / 10);if (totalCPS > 0) lifetimeCookies += (totalCPS / 10);}updateUI();}, 100);
