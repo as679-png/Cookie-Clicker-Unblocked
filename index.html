@@ -3,132 +3,131 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Cookie Clicker - Advanced Edition</title>
+    <title>Local Roblox Home</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
-    <!-- LEFT COLUMN: Clicking Zone -->
-    <div class="section left-section">
-        <div class="bakery-title">Chromebook's Bakery</div>
-        <div class="score-panel">
-            <div id="cookie-count">0 cookies</div>
-            <div id="cps-count">per second: 0.0</div>
+    <!-- Top Navigation Bar -->
+    <header class="navbar">
+        <div class="logo">ROBLOX_LOCAL</div>
+        <nav>
+            <a href="#" class="active">Discover</a>
+            <a href="#">Avatar Shop</a>
+            <a href="#">Create</a>
+            <a href="#">Robux</a>
+        </nav>
+        <div class="search-bar">
+            <input type="text" placeholder="Search games...">
         </div>
-        <div class="cookie-space">
-            <div class="big-cookie" id="cookie-btn"></div>
-        </div>
-    </div>
+    </header>
 
-    <!-- MIDDLE COLUMN: News & Achievements -->
-    <div class="section middle-section">
-        <!-- Golden Frenzy Progress Timer Bar -->
-        <div class="progress-bar-container" id="frenzy-bar-wrap">
-            <div class="progress-bar" id="frenzy-bar"></div>
-        </div>
-
-        <div class="column-header">Stats & Notices</div>
+    <!-- Main Content Container -->
+    <main class="container">
         
-        <div class="ticker-box">
-            <span class="ticker-label">News:</span>
-            <span id="news-content">Your bakery opens. The world feels slightly sweeter.</span>
-        </div>
-
-        <div class="achievements-box">
-            <h3>Achievements</h3>
-            <div class="achievements-flex" id="achievements-container">
-                <div class="badge locked" id="ach-1">🍪 First Click</div>
-                <div class="badge locked" id="ach-100">🔥 Wake & Bake</div>
-                <div class="badge locked" id="ach-10k">👑 Cookie Royalty</div>
-                <div class="badge locked" id="ach-1m">🚀 Space Baker</div>
-                <div class="badge locked" id="ach-cursor">🖱️ Click Storm</div>
-                <div class="badge locked" id="ach-grandma">👵 Senior Support</div>
-                <div class="badge locked" id="ach-farm">🌾 Green Thumb</div>
-                <div class="badge locked" id="ach-factory">🏭 Overproduction</div>
-                <div class="badge locked" id="ach-bank">🏦 Millionaire</div>
-                <div class="badge locked" id="ach-portal">🌀 Multiverse Master</div>
+        <!-- Featured 3D Game Player Section -->
+        <section class="player-section">
+            <h2>Now Playing: 3D Platformer Prototype</h2>
+            <div class="game-window">
+                <!-- Simple 3D Canvas Placeholder -->
+                <canvas id="gameCanvas"></canvas>
+                <div class="game-ui">
+                    <p>Use <strong>WASD</strong> or <strong>Arrow Keys</strong> to move the cube.</p>
+                </div>
             </div>
-        </div>
-    </div>
+        </section>
 
-    <!-- RIGHT COLUMN: Store with Vertical GUI -->
-    <div class="section right-section">
-        <div class="column-header">Store Buildings</div>
-        <div class="shop-vertical-list">
+        <!-- Roblox-Style Grid of Games -->
+        <section class="games-marketplace">
+            <h2>Recommended For You</h2>
+            <div class="game-grid">
+                <!-- Generated Game Cards -->
+                <div class="game-card">
+                    <div class="game-thumb platformer"></div>
+                    <h3>3D Platformer Obby</h3>
+                    <p>👍 94% | 👤 12.5K</p>
+                </div>
+                <div class="game-card">
+                    <div class="game-thumb tycoon"></div>
+                    <h3>Mega Mansion Tycoon</h3>
+                    <p>👍 88% | 👤 45.2K</p>
+                </div>
+                <div class="game-card">
+                    <div class="game-thumb simulator"></div>
+                    <h3>Pet Training Sim</h3>
+                    <p>👍 91% | 👤 8.9K</p>
+                </div>
+                <div class="game-card">
+                    <div class="game-thumb anime"></div>
+                    <h3>Anime Fighting Ultra</h3>
+                    <p>👍 95% | 👤 85.0K</p>
+                </div>
+                <!-- Duplicate this card structure to add more games -->
+            </div>
+        </section>
+    </main>
+
+    <!-- Basic 3D Script Logic -->
+    <script>
+        const canvas = document.getElementById('gameCanvas');
+        const ctx = canvas.getContext('2d');
+
+        // Set canvas size
+        canvas.width = 800;
+        canvas.height = 400;
+
+        // Simple 3D projection variables for a moving cube
+        let posX = 0, posY = 0, posZ = 0;
+        let keys = {};
+
+        window.addEventListener('keydown', e => keys[e.key.toLowerCase()] = true);
+        window.addEventListener('keyup', e => keys[e.key.toLowerCase()] = false);
+
+        function drawCube(x, y, z, size) {
+            // Simple pseudo-3D perspective calculation
+            let perspective = 400 / (400 + z);
+            let screenX = canvas.width / 2 + x * perspective;
+            let screenY = canvas.height / 2 + y * perspective;
+            let screenSize = size * perspective;
+
+            ctx.fillStyle = '#00a2ff';
+            ctx.fillRect(screenX - screenSize/2, screenY - screenSize/2, screenSize, screenSize);
             
-            <!-- NEW ULTRALIGHT UPGRADE: Click Multiplier -->
-            <div class="item-row disabled upgrade-row" id="item-clickUpgrade" onclick="buyClickUpgrade()">
-                <div class="item-graphic">⚡</div>
-                <div class="item-meta">
-                    <span class="item-title">Click Power 2x</span>
-                    <span class="item-cost">Price: <span id="cost-clickUpgrade">2</span></span>
-                </div>
-                <div class="item-amount" id="count-clickUpgrade">0</div>
-            </div>
+            // Draw outline
+            ctx.strokeStyle = '#ffffff';
+            ctx.lineWidth = 2;
+            ctx.strokeRect(screenX - screenSize/2, screenY - screenSize/2, screenSize, screenSize);
+        }
 
-            <!-- Item: Cursor -->
-            <div class="item-row disabled" id="item-cursor" onclick="buyUpgrade('cursor')">
-                <div class="item-graphic" id="icon-cursor">🖱️</div>
-                <div class="item-meta">
-                    <span class="item-title" id="title-cursor">Cursor</span>
-                    <span class="item-cost">Price: <span id="cost-cursor">15</span></span>
-                </div>
-                <div class="item-amount" id="count-cursor">0</div>
-            </div>
+        function gameLoop() {
+            // Clear screen
+            ctx.fillStyle = '#111';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-            <!-- Item: Grandma -->
-            <div class="item-row disabled" id="item-grandma" onclick="buyUpgrade('grandma')">
-                <div class="item-graphic" id="icon-grandma">👵</div>
-                <div class="item-meta">
-                    <span class="item-title" id="title-grandma">Grandma</span>
-                    <span class="item-cost">Price: <span id="cost-grandma">100</span></span>
-                </div>
-                <div class="item-amount" id="count-grandma">0</div>
-            </div>
+            // Draw a basic "3D floor" grid line perspective
+            ctx.strokeStyle = '#333';
+            ctx.beginPath();
+            for(let i = -5; i <= 5; i++) {
+                let p1 = 400 / (400 + 0);
+                let p2 = 400 / (400 + 500);
+                ctx.moveTo(canvas.width/2 + (i*100)*p1, canvas.height/2 + 100*p1);
+                ctx.lineTo(canvas.width/2 + (i*100)*p2, canvas.height/2 + 100*p2);
+            }
+            ctx.stroke();
 
-            <!-- Item: Farm -->
-            <div class="item-row disabled" id="item-farm" onclick="buyUpgrade('farm')">
-                <div class="item-graphic" id="icon-farm">🌾</div>
-                <div class="item-meta">
-                    <span class="item-title" id="title-farm">Farm</span>
-                    <span class="item-cost">Price: <span id="cost-farm">1100</span></span>
-                </div>
-                <div class="item-amount" id="count-farm">0</div>
-            </div>
+            // Handle Input controls
+            if (keys['w'] || keys['arrowup']) posZ -= 5;
+            if (keys['s'] || keys['arrowdown']) posZ += 5;
+            if (keys['a'] || keys['arrowleft']) posX -= 5;
+            if (keys['d'] || keys['arrowright']) posX += 5;
 
-            <!-- Item: Factory -->
-            <div class="item-row disabled" id="item-factory" onclick="buyUpgrade('factory')">
-                <div class="item-graphic" id="icon-factory">🏭</div>
-                <div class="item-meta">
-                    <span class="item-title" id="title-factory">Factory</span>
-                    <span class="item-cost">Price: <span id="cost-factory">12000</span></span>
-                </div>
-                <div class="item-amount" id="count-factory">0</div>
-            </div>
+            // Render Player Cube
+            drawCube(posX, posY + 50, posZ, 40);
 
-            <!-- Item: Bank -->
-            <div class="item-row disabled" id="item-bank" onclick="buyUpgrade('bank')">
-                <div class="item-graphic" id="icon-bank">🏦</div>
-                <div class="item-meta">
-                    <span class="item-title" id="title-bank">Bank</span>
-                    <span class="item-cost">Price: <span id="cost-bank">130000</span></span>
-                </div>
-                <div class="item-amount" id="count-bank">0</div>
-            </div>
+            requestAnimationFrame(gameLoop);
+        }
 
-            <!-- Item: Portal -->
-            <div class="item-row disabled" id="item-portal" onclick="buyUpgrade('portal')">
-                <div class="item-graphic" id="icon-portal">🌀</div>
-                <div class="item-meta">
-                    <span class="item-title" id="title-portal">Portal</span>
-                    <span class="item-cost">Price: <span id="cost-portal">1400000</span></span>
-                </div>
-                <div class="item-amount" id="count-portal">0</div>
-            </div>
-
-        </div>
-    </div>
-
-    <script src="script.js"></script>
+        gameLoop();
+    </script>
 </body>
 </html>
