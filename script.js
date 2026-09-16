@@ -1,3 +1,5 @@
+### 2. `script.js` (Fixed Direct DOM Engine Mapping)
+```javascript
 // Game Core Variables
 let cookies = 0;
 let totalCPS = 0;
@@ -17,7 +19,7 @@ const FRENZY_MAX_DURATION = 20;
 let bossActive = false;
 let bossHP = 750;
 const BOSS_MAX_HP = 750;
-let bossTimeLeft = 600; // 10 Minutes in seconds
+let bossTimeLeft = 600; 
 let bossTimerInterval = null;
 
 const upgrades = {
@@ -41,7 +43,6 @@ const frenzyBar = document.getElementById('frenzy-bar');
 // 1. CLICK COOKIE CORE LOGIC
 cookieBtn.addEventListener('mousedown', (e) => {
     if (bossActive) {
-        // If a Boss is active, manual clicks deal damage instead of earning points
         damageBoss();
     } else {
         let clickPayout = baseClickValue * goldenMultiplier;
@@ -103,10 +104,9 @@ function calculateCPS() {
 // 3. BOSS CONFLICT CONTROLLER ENGINE
 function startBossFight() {
     if (bossActive) return;
-    bossActive = false; // Reset setup flags
     bossActive = true;
     bossHP = BOSS_MAX_HP;
-    bossTimeLeft = 600; // 10 minutes
+    bossTimeLeft = 600; 
     
     document.getElementById('boss-overlay').style.display = 'block';
     newsContent.innerText = "⚠️ THE OVERSEER HAS BLOCKED REGULAR PRODUCTION! CLICK THE COOKIE TO DESTROY HIM!";
@@ -114,8 +114,6 @@ function startBossFight() {
 
     bossTimerInterval = setInterval(() => {
         bossTimeLeft--;
-        
-        // Format time string
         let mins = Math.floor(bossTimeLeft / 60);
         let secs = bossTimeLeft % 60;
         document.getElementById('boss-timer').innerText = `Time Left: ${mins}:${secs < 10 ? '0' : ''}${secs}`;
@@ -130,8 +128,7 @@ function damageBoss() {
     bossHP--;
     updateBossUI();
     
-    // Spawn floating damage text over mouse coordinates
-    let randomX = window.innerWidth / 4; // Approximating Left Dashboard boundaries
+    let randomX = window.innerWidth / 4; 
     let randomY = window.innerHeight / 2;
     createFloatingText(randomX, randomY, "💥 CRIT!", "#ff4757");
 
@@ -150,11 +147,8 @@ function winBossFight() {
     clearInterval(bossTimerInterval);
     bossActive = false;
     document.getElementById('boss-overlay').style.display = 'none';
-    
-    // Award 5,000 cookies bounty prize
     cookies += 5000;
     lifetimeCookies += 5000;
-    
     unlock('ach-boss', "🏆 DEFEATED THE OVERSEER! You earned a massive bounty of 5,000 cookies!");
     updateUI();
 }
@@ -163,25 +157,37 @@ function failBossFight() {
     clearInterval(bossTimerInterval);
     bossActive = false;
     document.getElementById('boss-overlay').style.display = 'none';
-    
-    // Penalize half of the current cookies stash
     cookies = Math.floor(cookies / 2);
     newsContent.innerText = "💀 TIME EXPIRED! The Overseer absorbed 50% of your cookie vaults.";
     updateUI();
 }
 
-// 4. SECRET OWNER ACCESS AND MANAGEMENT
+// 4. EMBEDDED CONSOLE SYSTEM ACTION HANDLERS
 function openOwnerMenu() {
-    let keyInput = prompt("🔑 ENTER SYSTEM KEY PHRASE:");
-    if (keyInput === "COOKIEOVERLORD") {
-        document.getElementById('owner-modal').style.display = 'flex';
-    } else if (keyInput !== null) {
-        alert("❌ ACCESS DENIED: INVALID PRIVILEGE LEVEL.");
+    // Force overlay framework display mechanics via JavaScript inline commands
+    const targetModal = document.getElementById('owner-modal');
+    targetModal.setAttribute('style', 'display: flex !important;');
+    
+    document.getElementById('security-gate').style.display = 'block';
+    document.getElementById('cheat-controls').style.display = 'none';
+    document.getElementById('console-key-input').value = "";
+}
+
+function verifyConsoleKey() {
+    const inputVal = document.getElementById('console-key-input').value.trim();
+    
+    // Explicit condition checking matching text configurations
+    if (inputVal === "COOKIEOVERLORD") {
+        document.getElementById('security-gate').style.display = 'none';
+        document.getElementById('cheat-controls').style.display = 'block';
+        newsContent.innerText = "[SYSTEM]: Owner privileges successfully confirmed.";
+    } else {
+        alert("❌ ACCESS DENIED: INVALID PRIVILEGE ACCESS CODE.");
     }
 }
 
 function closeOwnerMenu() {
-    document.getElementById('owner-modal').style.display = 'none';
+    document.getElementById('owner-modal').setAttribute('style', 'display: none !important;');
 }
 
 function cheatCookies(amount) {
@@ -214,7 +220,7 @@ function unlock(id, msg) {
     newsContent.innerText = msg;
 }
 
-// 6. GENERAL UI SYSTEM SYNCHRONIZER
+// 6. UI SYSTEM SYNCHRONIZER
 function updateUI() {
     document.getElementById('cookie-count').innerText = `${Math.floor(cookies)} cookies`;
     document.getElementById('cps-count').innerText = `per second: ${totalCPS.toFixed(1)}`;
@@ -291,12 +297,3 @@ setInterval(() => {
         frenzyTimer--;
         let pctRemaining = (frenzyTimer / FRENZY_MAX_DURATION) * 100;
         frenzyBar.style.width = `${pctRemaining}%`;
-
-        if (frenzyTimer === 0) {
-            goldenMultiplier = 1;
-            frenzyBarWrap.style.display = 'none';
-            leftSection.classList.remove('frenzy-active');
-        }
-    }
-
-    // 1% random chance to trigger an explicit Overseer boss invasion if the user passes a score threshold of 200 cookies
