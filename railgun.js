@@ -1,50 +1,40 @@
-// Register player core requirement for EaglerForgeInjector
-ModAPI.require("player");
+// Register metadata natively to EaglerForgeInjector's ModAPI core
+ModAPI.registerMod("LightningRailgun", "1.0.0", "Community");
 
 var lightningCooldownTicks = 0;
-var isClickingRight = false;
-
-// Global browser listener to catch right mouse button clicks securely
-window.addEventListener("mousedown", function(e) {
-    if (e.button === 2) { // 2 = Right Click
-        isClickingRight = true;
-    }
-});
-
-window.addEventListener("mouseup", function(e) {
-    if (e.button === 2) {
-        isClickingRight = false;
-    }
-});
 
 ModAPI.addEventListener("update", function() {
-    if (!ModAPI.player) return;
+    // Access the core internal Minecraft client instance safely
+    if (typeof Minecraft === 'undefined' || !Minecraft.getMinecraft() || !Minecraft.getMinecraft().thePlayer) return;
+    
+    var player = Minecraft.getMinecraft().thePlayer;
+    var world = Minecraft.getMinecraft().theWorld;
 
-    // Cooldown handler using native loop ticks
+    // Tick-down handle using native engine update frame drops
     if (lightningCooldownTicks > 0) {
         lightningCooldownTicks--;
     }
 
-    var heldItem = ModAPI.player.getHeldItem();
-    
-    // Check if the player is holding a Carrot on a Stick (ID 398)
-    if (heldItem && heldItem.id === 398) {
+    // Access the raw held item stack using the native inventory index array
+    if (player.inventory && player.inventory.getCurrentItem()) {
+        var heldStack = player.inventory.getCurrentItem();
         
-        // Auto-label weapon so it says Railgun in your HUD hotbar
-        if (heldItem.getDisplayName() !== "§b§lLightning Railgun") {
-            heldItem.setStackDisplayName("§b§lLightning Railgun");
-        }
-        
-        // Execute when right click is pressed down and cooldown is empty
-        if (isClickingRight && lightningCooldownTicks === 0) {
-            lightningCooldownTicks = 20; // 1 second gap cooldown
-
-            // Tells the local game engine to execute the lightning strike summon command
-            // This casts lightning instantly at your exact crosshair coordinate boundary blocks
-            ModAPI.player.sendChatMessage("/execute @p ~ ~ ~ summon LightningBolt ^ ^ ^30");
+        // 398 is the hard network item ID for a Carrot on a Stick
+        if (heldStack.getItem && heldStack.getItem().getUnlocalizedName() && heldStack.getItem().getUnlocalizedName().includes("carrotOnAStick")) {
             
-            // Back up explosion sound effect
-            ModAPI.player.playSound("random.explode", 1.0, 1.0);
+            // Forces visual hotbar name injection
+            heldStack.setStackDisplayName("§b§lLightning Railgun");
+
+            // Catch native item usage right-click trigger status
+            if (player.isUsingItem() && lightningCooldownTicks === 0) {
+                lightningCooldownTicks = 30; // 1.5-second balance gap
+
+                // Natively triggers local thread client command engine execution
+                player.sendChatMessage("/execute @p ~ ~ ~ summon LightningBolt ^ ^ ^30");
+                
+                // Play standard fallback explosion audio at the player coordinates
+                player.playSound("random.explode", 1.0, 1.0);
+            }
         }
     }
 });
