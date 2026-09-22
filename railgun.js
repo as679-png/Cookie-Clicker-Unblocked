@@ -1,40 +1,30 @@
-// Register metadata natively to EaglerForgeInjector's ModAPI core
-ModAPI.registerMod("LightningRailgun", "1.0.0", "Community");
+// Register player core requirement for EaglerForgeInjector
+ModAPI.require("player");
 
-var lightningCooldownTicks = 0;
+// Listen directly to messages before they are processed by the server
+ModAPI.addEventListener("sendchatmessage", function(event) {
+    if (!ModAPI.player) return;
 
-ModAPI.addEventListener("update", function() {
-    // Access the core internal Minecraft client instance safely
-    if (typeof Minecraft === 'undefined' || !Minecraft.getMinecraft() || !Minecraft.getMinecraft().thePlayer) return;
-    
-    var mc = Minecraft.getMinecraft();
-    var player = mc.thePlayer;
-
-    // Tick-down handle using native engine update frames
-    if (lightningCooldownTicks > 0) {
-        lightningCooldownTicks--;
-    }
-
-    // Access the raw held item stack safely
-    if (player.inventory && player.inventory.getCurrentItem()) {
-        var heldStack = player.inventory.getCurrentItem();
+    // Check if the player exactly types ".orbital" in chat
+    if (event.message.trim().toLowerCase() === ".orbital") {
         
-        // Check for Carrot on a Stick
-        if (heldStack.getItem && heldStack.getItem().getUnlocalizedName() && heldStack.getItem().getUnlocalizedName().includes("carrotOnAStick")) {
-            
-            // Forces visual hotbar name injection
-            heldStack.setStackDisplayName("§b§lLightning Railgun");
+        // STOP the message from actually showing up in the public chat box
+        event.preventDefault = true;
 
-            // Bulletproof right-click check using the native game keybind status
-            if (mc.gameSettings.keyBindUseItem.isKeyDown() && lightningCooldownTicks === 0) {
-                lightningCooldownTicks = 20; // 1-second gap cooldown
+        // Play the explosive audio cue at your location
+        ModAPI.player.playSound("random.explode", 1.0, 1.0);
 
-                // Natively triggers local thread client command engine execution with strict 1.8.8 casing
-                player.sendChatMessage("/execute @p ~ ~ ~ summon LightningBolt ~ ~ ~15");
-                
-                // Play standard explosion audio at the player coordinates
-                player.playSound("random.explode", 1.0, 1.0);
-            }
-        }
+        // Core 1.8.8 Loop: Rains down 5 massive case-sensitive lightning bolts
+        // Spawns them in a cross pattern around your current coordinates
+        ModAPI.player.sendChatMessage("/summon LightningBolt ~ ~ ~");
+        ModAPI.player.sendChatMessage("/summon LightningBolt ~5 ~ ~");
+        ModAPI.player.sendChatMessage("/summon LightningBolt ~-5 ~ ~");
+        ModAPI.player.sendChatMessage("/summon LightningBolt ~ ~ ~5");
+        ModAPI.player.sendChatMessage("/summon LightningBolt ~ ~ ~-5");
+
+        // Force a cluster of explosive TNT to drop from 40 blocks high
+        ModAPI.player.sendChatMessage("/summon PrimedTnt ~ ~40 ~");
+        ModAPI.player.sendChatMessage("/summon PrimedTnt ~2 ~40 ~2");
+        ModAPI.player.sendChatMessage("/summon PrimedTnt ~-2 ~40 ~-2");
     }
 });
