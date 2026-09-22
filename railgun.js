@@ -6,16 +6,17 @@ ModAPI.addEventListener("sendchatmessage", function(event) {
     if (!ModAPI.player) return;
 
     // Check if the player exactly types ".orbital" in chat
-    if (event.message.trim().toLowerCase() === ".orbital") {
+    if (event.message && event.message.trim().toLowerCase() === ".orbital") {
         
-        // STOP the message from actually showing up in the public chat box
-        event.preventDefault = true;
+        // CORRECT WAY TO CANCEL: Call it as a function to drop the message securely
+        event.preventDefault();
 
-        // Play the explosive audio cue at your location
-        ModAPI.player.playSound("random.explode", 1.0, 1.0);
+        // Safe sound execution: Uses standard client entity triggers to prevent string splitting errors
+        if (typeof Minecraft !== 'undefined' && Minecraft.getMinecraft().thePlayer) {
+            Minecraft.getMinecraft().thePlayer.playSound("random.explode", 1.0, 1.0);
+        }
 
         // Core 1.8.8 Loop: Rains down 5 massive case-sensitive lightning bolts
-        // Spawns them in a cross pattern around your current coordinates
         ModAPI.player.sendChatMessage("/summon LightningBolt ~ ~ ~");
         ModAPI.player.sendChatMessage("/summon LightningBolt ~5 ~ ~");
         ModAPI.player.sendChatMessage("/summon LightningBolt ~-5 ~ ~");
